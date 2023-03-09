@@ -15,6 +15,8 @@
 #include <QFileDialog>
 #include <QPalette>
 
+#include <rgbhistogramwidget.h>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -33,10 +35,14 @@ private slots:
 
 
 private:
-
+    //functions
     void initWidget();
     void connectSignals();
 
+    //RGBHistogramWidget constructor
+
+
+    //UI Widget initialization
     QWidget* ui_centralWidget;
 
     QHBoxLayout* widgetLayout;
@@ -52,7 +58,6 @@ private:
 
     QLabel* header;
     QLabel* imageViewer;
-    QLabel* colourModelViewer;
 
     QScrollArea* imageScroller;
 
@@ -60,6 +65,8 @@ private:
     QFrame* decorativeLine2;
 
     QComboBox* colourModelComboBox;
+
+    RGBHistogramWidget* RGB_histogram; //HistogramWidget
 
     Ui::MainWindow *ui;
 };

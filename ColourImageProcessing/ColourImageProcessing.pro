@@ -10,10 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    rgbhistogramwidget.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    rgbhistogramwidget.h
 
 FORMS += \
     mainwindow.ui
