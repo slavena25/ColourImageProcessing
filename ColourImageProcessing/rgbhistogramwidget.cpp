@@ -35,16 +35,34 @@ void RGBHistogramWidget::paintEvent(QPaintEvent *event)
 
       QPainter painter(this);
 
+      //paint the x and y axes
+
       int barWidth = width() / 256;
+          int barHeight = height() - 20;
+
+          // Draw the x-axis
+          painter.drawLine(0, height() - 20, width(), height() - 20);
+
+          // Draw the y-axis
+          painter.drawLine(20, 0, 20, height());
+
+                // drawing the labels on the histogram widget
+              painter.drawText(0, height(), QString("0"));
+              painter.drawText(width() - 20, height(), QString("255"));
+
+
+              painter.drawText(0, 10, QString("%1").arg(barHeight));
+              painter.drawText(0, height() - 20, QString("0"));
+
 
           for (int i = 0; i < 256; ++i) {
               int redHeight = m_redValues[i] * height() / (width() * height());
               int greenHeight = m_greenValues[i] * height() / (width() * height());
               int blueHeight = m_blueValues[i] * height() / (width() * height());
 
-              QRect blueBar(i * barWidth, height() - blueHeight, barWidth, blueHeight);
-              QRect greenBar(i * barWidth, height() - blueHeight - greenHeight, barWidth, greenHeight);
-              QRect redBar(i * barWidth, height() - blueHeight - greenHeight - redHeight, barWidth, redHeight);
+              QRect blueBar(i * barWidth, height() - blueHeight - 20, barWidth, blueHeight);
+              QRect greenBar(i * barWidth, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
+              QRect redBar(i * barWidth, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
 
               painter.fillRect(redBar, Qt::red);
               painter.fillRect(greenBar, Qt::green);
