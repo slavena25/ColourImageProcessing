@@ -81,69 +81,90 @@ static HSI RGBtoHSI(RGB rgb)
 
 static RGB CMYtoRGB(CMY cmy)
 {
-    unsigned char r = (unsigned char)(255 * (cmy.C - 1));
-    unsigned char g = (unsigned char)(255 * (cmy.M - 1));
-    unsigned char b = (unsigned char)(255 * (cmy.Y - 1));
+    int r = (int)(255 * (cmy.C - 1));
+    int g = (int)(255 * (cmy.M - 1));
+    int b = (int)(255 * (cmy.Y - 1));
 
     return RGB(r, g, b);
 }
 
 static RGB CMYKtoRGB(CMYK cmyk)
 {
-    unsigned char r = (unsigned char)(255 * (1 - cmyk.C) * (1 - cmyk.K));
-    unsigned char g = (unsigned char)(255 * (1 - cmyk.M) * (1 - cmyk.K));
-    unsigned char b = (unsigned char)(255 * (1 - cmyk.Y) * (1 - cmyk.K));
+    int r = (int)(255 * (1 - cmyk.C) * (1 - cmyk.K));
+    int g = (int)(255 * (1 - cmyk.M) * (1 - cmyk.K));
+    int b = (int)(255 * (1 - cmyk.Y) * (1 - cmyk.K));
 
     return RGB(r, g, b);
 }
 
 static RGB HSItoRGB(HSI hsi)
 {
-    unsigned char r = (unsigned char)(0);
-    unsigned char g = (unsigned char)(0);
-    unsigned char b = (unsigned char)(0);
+    int r = (int)(0);
+    int g = (int)(0);
+    int b = (int)(0);
 
-    unsigned char h = (unsigned char)(hsi.H);
-    unsigned char s = (unsigned char)(hsi.S);
-    unsigned char i = (unsigned char)(hsi.I);
+    int h = (int)(hsi.H);
+    int s = (int)(hsi.S);
+    int i = (int)(hsi.I);
 
     if(h == 0)
     {
-        r = (unsigned char) (i + (2 * i * s));
-        g = (unsigned char) (i - ( i + s));
-        b = (unsigned char) (i - ( i * s));
+        r = (int) (i + (2 * i * s));
+        g = (int) (i - ( i + s));
+        b = (int) (i - ( i * s));
     }
     else if((h > 0) && (h < 120))
     {
-        r = (unsigned char) (i + (i * s) * cos(h) / cos(60-h));
-        g = (unsigned char) (i + (i * s) * (1 - cos(h) / cos(60-h)));
-        b = (unsigned char) (i - (i * s));
+        r = (int) (i + (i * s) * cos(h) / cos(60-h));
+        g = (int) (i + (i * s) * (1 - cos(h) / cos(60-h)));
+        b = (int) (i - (i * s));
     }
     else if(h == 120)
     {
-        r = (unsigned char) (i - (i * s));
-        g = (unsigned char) (i + (2 * i * s));
-        b = (unsigned char) (i - (i * s));
+        r = (int) (i - (i * s));
+        g = (int) (i + (2 * i * s));
+        b = (int) (i - (i * s));
     }
     else if ((h > 120) && (h < 240))
     {
-        r = (unsigned char) (i - (i * s));
-        g = (unsigned char) (i + (i * s) * cos(h-120) / cos(180-h));
-        b = (unsigned char) (i + (i * s) * (1 - cos(h-120) / cos(180-h)));
+        r = (int) (i - (i * s));
+        g = (int) (i + (i * s) * cos(h-120) / cos(180-h));
+        b = (int) (i + (i * s) * (1 - cos(h-120) / cos(180-h)));
     }
     else if (h == 240)
     {
-       r = (unsigned char) (i - (i * s));
-       g = (unsigned char) (i - (i * s));
-       b = (unsigned char) (i + (2 * i * s));
+       r = (int) (i - (i * s));
+       g = (int) (i - (i * s));
+       b = (int) (i + (2 * i * s));
     }
-    else if ((240 < h) && (h < 360))
+    else if ((h > 240) && (h < 360))
     {
-       r = (unsigned char) (i + (i * s) * (1 - cos(h-240) / cos(300-h)));
-       g = (unsigned char) (i - (i * s));
-       b = (unsigned char) (i + (i * s) * cos(h-240) / cos(300-h));
+       r = (int) (i + (i * s) * (1 - cos(h-240) / cos(300-h)));
+       g = (int) (i - (i * s));
+       b = (int) (i + (i * s) * cos(h-240) / cos(300-h));
     }
 
     return RGB(r, g, b);
 
 }
+
+static convertToCMY(CMY cmy, RGB rgb)
+{
+    RGBtoCMY(rgb);
+    CMYtoRGB(cmy);
+}
+
+static convertToCMYK(CMYK cmyk, RGB rgb)
+{
+    RGBtoCMYK(rgb);
+    CMYKtoRGB(cmyk);
+}
+
+static convertToHSI(HSI hsi, RGB rgb)
+{
+    RGBtoHSI(rgb);
+    HSItoRGB(hsi);
+}
+
+
+

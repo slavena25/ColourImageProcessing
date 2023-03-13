@@ -49,11 +49,11 @@ class CMY
 class RGB
 {
     public:
-        unsigned char R;
-        unsigned char G;
-        unsigned char B;
+        int R;
+        int G;
+        int B;
 
-        RGB(unsigned char r, unsigned char g, unsigned char b)
+        RGB(int r, int g, int b)
         {
             R = r;
             G = g;
