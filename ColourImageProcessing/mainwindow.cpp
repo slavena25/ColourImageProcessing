@@ -19,7 +19,10 @@ MainWindow::~MainWindow()
 void MainWindow::initWidget(){
 
     this->setWindowTitle("Image Colour Processing");
+
+    //to be implemented --> app icon
     //this->setWindowIcon(QIcon("icons/icon.png"));
+
     ui_centralWidget = new QWidget();
 
     //------------------ImageViewer Layout------------------
@@ -57,14 +60,11 @@ void MainWindow::initWidget(){
     colourModelComboBox->addItem("CMYK");
     colourModelComboBox->addItem("HSI");
 
-    colourModelViewer = new QLabel();
-    colourModelViewer->setAlignment(Qt::AlignCenter);
-    colourModelViewer->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    colourModelViewer->setStyleSheet("QLabel { background-color : white; }");
+    RGB_histogram = new RGBHistogramWidget();
 
     colourModelLayout = new QVBoxLayout();
     colourModelLayout->addWidget(colourModelComboBox);
-    colourModelLayout->addWidget(colourModelViewer);
+    colourModelLayout->addWidget(RGB_histogram);
 
     //------------------Image and ColourModel Layout------------------
 
@@ -117,10 +117,19 @@ void MainWindow::on_Open_Clicked(){
     if(image.isNull()){
         QMessageBox::warning(this, "Error", "Failed to open image.");
     }else{
+        //display the image
+        imageViewer->setPixmap(QPixmap::fromImage(image));
+        imageViewer->resize(image.size());
+
+        //display the histogram
+        //IDEA:: use the CurrentIndexChanged signal for QComboBox
+        //The signal will detect every time the QComboBox is opened and a different option is choosen
+        //The comboBox will be initally empty or will have a PlaceholderText --> "Choose Model"
+        //Leave an if/else here, that will check if anything is selected in the QComboBox upon opening an image
+        //and call the CurrentIndexChanged signal if needed
         QString colourModel = colourModelComboBox->currentText();
                         if (colourModel == "RGB") {
-                            //Apply RGB image processing
-                            //..
+                            RGB_histogram->setImage(image);
                         } else if (colourModel == "CMY") {
                             //Apply CMY image processing
                             //...
@@ -131,9 +140,6 @@ void MainWindow::on_Open_Clicked(){
                             // Apply HSI image processing
                             // ...
                         }
-
-        imageViewer->setPixmap(QPixmap::fromImage(image));
-        imageViewer->resize(image.size());
 
     }
 }
