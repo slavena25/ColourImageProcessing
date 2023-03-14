@@ -1,23 +1,26 @@
 #include "colorconversion.h"
 
-static double Max(double a, double b)
+ColorConversion::ColorConversion(){
+
+}
+
+double ColorConversion::MaxVal(double a, double b)
 {
     return a >= b ? a : b;
 }
 
-static double Min(double a, double b)
+double ColorConversion::MinVal(double a, double b)
 {
     return a >= b ? b : a;
 }
 
-
-static CMYK RGBtoCMYK(RGB rgb)
+ColorConversion::CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb.R / 255;
-    double doubleG = (double)rgb.G / 255;
-    double doubleB = (double)rgb.B / 255;
+    double doubleR = (double)rgb->Red / 255;
+    double doubleG = (double)rgb->Green / 255;
+    double doubleB = (double)rgb->Blue / 255;
 
-    double k = 1 - Max(Max(doubleR, doubleG), doubleB);
+    double k = 1 - MaxVal(MaxVal(doubleR, doubleG), doubleB);
     double c = (1 - doubleR - k)/(1 - k);
     double m = (1 - doubleG - k)/(1 - k);
     double y = (1 - doubleB - k)/(1 - k);
@@ -26,11 +29,11 @@ static CMYK RGBtoCMYK(RGB rgb)
 
 }
 
-static CMY RGBtoCMY(RGB rgb)
+ColorConversion::CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb.R / 255;
-    double doubleG = (double)rgb.G / 255;
-    double doubleB = (double)rgb.B / 255;
+    double doubleR = (double)rgb->Red / 255;
+    double doubleG = (double)rgb->Green / 255;
+    double doubleB = (double)rgb->Blue / 255;
 
     double c = 1 - doubleR;
     double m = 1 - doubleG;
@@ -42,11 +45,11 @@ static CMY RGBtoCMY(RGB rgb)
 
 //(R - (G/2) - (B/2)) / (sqrt((R*R) + (G*G) + (B*B) - (R*G) - (R*B) - (G*B)))
 
-static HSI RGBtoHSI(RGB rgb)
+ColorConversion::HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb.R;
-    double doubleG = (double)rgb.G;
-    double doubleB = (double)rgb.B;
+    double doubleR = (double)rgb->Red;
+    double doubleG = (double)rgb->Green;
+    double doubleB = (double)rgb->Blue;
 
     double h;
     double s;
@@ -64,7 +67,7 @@ static HSI RGBtoHSI(RGB rgb)
 
     if(i > 0)
     {
-        s = 1 - Min(doubleR, Min(doubleG, doubleB));
+        s = 1 - MinVal(doubleR, MinVal(doubleG, doubleB));
     }
     else if(i == 0)
     {
@@ -79,33 +82,33 @@ static HSI RGBtoHSI(RGB rgb)
     return HSI(h, s, i);
 }
 
-static RGB CMYtoRGB(CMY cmy)
+ColorConversion::RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
-    int r = (int)(255 * (cmy.C - 1));
-    int g = (int)(255 * (cmy.M - 1));
-    int b = (int)(255 * (cmy.Y - 1));
+    int r = (int)(255 * (cmy->Cyan - 1));
+    int g = (int)(255 * (cmy->Magenta - 1));
+    int b = (int)(255 * (cmy->Yellow - 1));
 
     return RGB(r, g, b);
 }
 
-static RGB CMYKtoRGB(CMYK cmyk)
+ColorConversion::RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
-    int r = (int)(255 * (1 - cmyk.C) * (1 - cmyk.K));
-    int g = (int)(255 * (1 - cmyk.M) * (1 - cmyk.K));
-    int b = (int)(255 * (1 - cmyk.Y) * (1 - cmyk.K));
+    int r = (int)(255 * (1 - cmyk->Cyan) * (1 - cmyk->Black));
+    int g = (int)(255 * (1 - cmyk->Magenta) * (1 - cmyk->Black));
+    int b = (int)(255 * (1 - cmyk->Yellow) * (1 - cmyk->Black));
 
     return RGB(r, g, b);
 }
 
-static RGB HSItoRGB(HSI hsi)
+ColorConversion::RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
 {
     int r = (int)(0);
     int g = (int)(0);
     int b = (int)(0);
 
-    int h = (int)(hsi.H);
-    int s = (int)(hsi.S);
-    int i = (int)(hsi.I);
+    int h = (int)(hsi->Hue);
+    int s = (int)(hsi->Saturation);
+    int i = (int)(hsi->Intensity);
 
     if(h == 0)
     {
@@ -148,19 +151,19 @@ static RGB HSItoRGB(HSI hsi)
 
 }
 
-static convertToCMY(CMY cmy, RGB rgb)
+void ColorConversion::convertToCMY(ColourModel_CMY* cmy, ColourModel_RGB* rgb)
 {
     RGBtoCMY(rgb);
     CMYtoRGB(cmy);
 }
 
-static convertToCMYK(CMYK cmyk, RGB rgb)
+void ColorConversion::convertToCMYK(ColourModel_CMYK* cmyk, ColourModel_RGB* rgb)
 {
     RGBtoCMYK(rgb);
     CMYKtoRGB(cmyk);
 }
 
-static convertToHSI(HSI hsi, RGB rgb)
+void ColorConversion::convertToHSI(ColourModel_HSI* hsi, ColourModel_RGB* rgb)
 {
     RGBtoHSI(rgb);
     HSItoRGB(hsi);

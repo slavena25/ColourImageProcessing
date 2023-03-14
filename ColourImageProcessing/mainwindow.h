@@ -14,8 +14,14 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QPalette>
+#include <QDebug>
 
-#include <rgbhistogramwidget.h>
+#include "rgbhistogramwidget.h"
+#include "ui_mainwindow.h"
+#include "colourmodel_rgb.h"
+#include "colourmodel_cmy.h"
+#include "colourmodel_cmyk.h"
+#include "colourmodel_hsi.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -32,15 +38,12 @@ public:
 private slots:
     void on_Open_Clicked();
     void on_Save_Clicked();
-
+    void colourModelComboBox_CurrentIndexChanged(int index);
 
 private:
     //functions
     void initWidget();
     void connectSignals();
-
-    //RGBHistogramWidget constructor
-
 
     //UI Widget initialization
     QWidget* ui_centralWidget;
@@ -67,6 +70,33 @@ private:
     QComboBox* colourModelComboBox;
 
     RGBHistogramWidget* RGB_histogram; //HistogramWidget
+
+    //colourModels
+    ColourModel_RGB* primary_RGB = new ColourModel_RGB(0, 0, 0);
+    ColourModel_RGB* derived_RGB = new ColourModel_RGB(0, 0, 1);
+
+    ColourModel_CMY* primary_CMY = new ColourModel_CMY(0,0,0);
+    ColourModel_CMY* derived_CMY = new ColourModel_CMY(0,0,1);
+
+    ColourModel_CMYK* primary_CMYK = new ColourModel_CMYK(0,0,0);
+    ColourModel_CMYK* derived_CMYK = new ColourModel_CMYK(0,0,1);
+
+    ColourModel_HSI* primary_HSI = new ColourModel_HSI(0,0,0);
+    ColourModel_HSI derived_HSI = new ColourModel_HSI(0,0,1);
+
+    //colours
+    int red;
+    int green;
+    int blue;
+
+    double cyan;
+    double magenta;
+    double yellow;
+    double black;
+
+    double hue;
+    double saturation;
+    double intensity;
 
     Ui::MainWindow *ui;
 };
