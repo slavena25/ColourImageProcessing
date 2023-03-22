@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -101,6 +100,7 @@ void MainWindow::initWidget(){
 void MainWindow::connectSignals(){
     QObject::connect(openImage, SIGNAL(clicked()), this, SLOT(on_Open_Clicked()));
     QObject::connect(saveImage, SIGNAL(clicked()), this, SLOT(on_Save_Clicked()));
+    QObject::connect(colourModelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(colourModelComboBox_CurrentIndexChanged(int)));
 }
 
 void MainWindow::on_Open_Clicked(){
@@ -122,23 +122,17 @@ void MainWindow::on_Open_Clicked(){
         imageViewer->resize(image.size());
 
         //display the histogram
-        //IDEA:: use the CurrentIndexChanged signal for QComboBox
-        //The signal will detect every time the QComboBox is opened and a different option is choosen
-        //The comboBox will be initally empty or will have a PlaceholderText --> "Choose Model"
-        //Leave an if/else here, that will check if anything is selected in the QComboBox upon opening an image
-        //and call the CurrentIndexChanged signal if needed
+        //move this if/else to the CurrentIndexChanged function
+        //fix RGBHistogramWidget and make it work with all colour models?
         QString colourModel = colourModelComboBox->currentText();
                         if (colourModel == "RGB") {
-                            RGB_histogram->setImage(image);
+                            RGB_histogram->setImageRGB(image);
                         } else if (colourModel == "CMY") {
-                            //Apply CMY image processing
-                            //...
+                            RGB_histogram->setImageCMY(image);
                         } else if (colourModel == "CMYK") {
-                            // Apply CMYK image processing
-                            // ...
+                            RGB_histogram->setImageCMYK(image);
                         } else if (colourModel == "HSI") {
-                            // Apply HSI image processing
-                            // ...
+                            RGB_histogram->setImageHSI(image);
                         }
 
     }
@@ -157,4 +151,12 @@ void MainWindow::on_Save_Clicked(){
         QMessageBox::warning(this, "Error", "Failed to save image.");
     }
 
+}
+
+//works
+void MainWindow::colourModelComboBox_CurrentIndexChanged(int){
+    qDebug() << "Works";
+    if(primary_RGB->Equals(derived_RGB)){
+        qDebug() << "This is ok";
+    }
 }

@@ -1,90 +1,49 @@
 #ifndef COLORCONVERSION_H
 #define COLORCONVERSION_H
 
-#include <cmath>
+#include "colourmodel_rgb.h"
+#include "colourmodel_cmy.h"
+#include "colourmodel_cmyk.h"
+#include "colourmodel_hsi.h"
 
-class CMYK
+
+class ColourModel_RGB;
+class ColourModel_CMY;
+class ColourModel_CMYK;
+class ColourModel_HSI;
+
+class ColorConversion
 {
-    public:
-        double C;
-        double M;
-        double Y;
-        double K;
+public:
+    ColorConversion();
+    ~ColorConversion();
 
-        CMYK(double c, double m, double y, double k)
-        {
-            C = c;
-            M = m;
-            Y = y;
-            K = k;
-        }
+    //max-min functions
+    double MaxVal(double a, double b);
+    double MinVal(double a, double b);
 
-        bool Equals(CMYK cmyk)
-        {
-            return (C == cmyk.C) && (M == cmyk.M) && (Y == cmyk.Y) && (K == cmyk.K);
-        }
+    //colour model constructors
+    //ERROR --> not inialized
+    ColourModel_RGB* RGB;
+    ColourModel_CMY* CMY;
+    ColourModel_CMYK* CMYK;
+    ColourModel_HSI* HSI;
+
+    //conversion model-to-model
+    ColourModel_CMYK RGBtoCMYK(ColourModel_RGB* rgb);
+    ColourModel_CMY RGBtoCMY(ColourModel_RGB* rgb);
+    ColourModel_HSI RGBtoHSI(ColourModel_RGB* rgb);
+    ColourModel_RGB CMYtoRGB(ColourModel_CMY* cmy);
+    ColourModel_RGB CMYKtoRGB(ColourModel_CMYK* cmyk);
+    ColourModel_RGB HSItoRGB(ColourModel_HSI* hsi);
+
+    //conversion
+    void convertToCMY(ColourModel_CMY* cmy, ColourModel_RGB* rgb);
+    void convertToCMYK(ColourModel_CMYK* cmyk, ColourModel_RGB* rgb);
+    void convertToHSI(ColourModel_HSI* hsi, ColourModel_RGB* rgb);
+
 
 };
 
-class CMY
-{
-    public:
-        double C;
-        double M;
-        double Y;
-
-        CMY(double c, double m, double y)
-        {
-            C = c;
-            M = m;
-            Y = y;
-        }
-
-        bool Equals(CMY cmy)
-        {
-            return (C == cmy.C) && (M == cmy.M) && (Y == cmy.Y);
-        }
-};
-
-class RGB
-{
-    public:
-        int R;
-        int G;
-        int B;
-
-        RGB(int r, int g, int b)
-        {
-            R = r;
-            G = g;
-            B = b;
-        }
-
-        bool Equals(RGB rgb)
-        {
-            return (R == rgb.R) && (G == rgb.B) && (B == rgb.B);
-        }
-
-};
-
-class HSI
-{
-    public:
-        double H;
-        double S;
-        double I;
-
-        HSI(double h, double s, double i)
-        {
-            H = h;
-            S = s;
-            I = i;
-        }
-
-        bool Equals(HSI hsi)
-        {
-            return (H == hsi.H) && (S == hsi.S) && (I == hsi.I);
-        }
-};
 
 #endif // COLORCONVERSION_H

@@ -10,12 +10,22 @@ CONFIG += c++17
 
 SOURCES += \
     colorconversion.cpp \
+    colourmodel_cmy.cpp \
+    colourmodel_cmyk.cpp \
+    colourmodel_hsi.cpp \
+    colourmodel_rgb.cpp \
+    icolourmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     rgbhistogramwidget.cpp
 
 HEADERS += \
     colorconversion.h \
+    colourmodel_cmy.h \
+    colourmodel_cmyk.h \
+    colourmodel_hsi.h \
+    colourmodel_rgb.h \
+    icolourmodel.h \
     mainwindow.h \
     rgbhistogramwidget.h
 
