@@ -9,7 +9,10 @@ class RGBHistogramWidget : public QWidget
 {
 public:
     RGBHistogramWidget(QWidget *parent = nullptr);
-    void setImage(const QImage &image);
+    void setImageRGB(const QImage &image);
+    void setImageCMY(const QImage &image);
+    void setImageCMYK(const QImage &image);
+    void setImageHSI(const QImage &image);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

@@ -14,7 +14,7 @@ double ColorConversion::MinVal(double a, double b)
     return a >= b ? b : a;
 }
 
-ColorConversion::CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
+ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
     double doubleR = (double)rgb->Red / 255;
     double doubleG = (double)rgb->Green / 255;
@@ -25,11 +25,11 @@ ColorConversion::CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
     double m = (1 - doubleG - k)/(1 - k);
     double y = (1 - doubleB - k)/(1 - k);
 
-    return CMYK(c, m, y , k );
+    return ColourModel_CMYK(c, m, y , k );
 
 }
 
-ColorConversion::CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
+ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
     double doubleR = (double)rgb->Red / 255;
     double doubleG = (double)rgb->Green / 255;
@@ -39,13 +39,11 @@ ColorConversion::CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
     double m = 1 - doubleG;
     double y = 1 - doubleB;
 
-    return CMY(c, m, y);
+    return ColourModel_CMY(c, m, y);
 
 }
 
-//(R - (G/2) - (B/2)) / (sqrt((R*R) + (G*G) + (B*B) - (R*G) - (R*B) - (G*B)))
-
-ColorConversion::HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
+ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 {
     double doubleR = (double)rgb->Red;
     double doubleG = (double)rgb->Green;
@@ -79,28 +77,28 @@ ColorConversion::HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
         h = 360 - acos(doubleR - (doubleG / 2) - (doubleB / 2) / sqrt((doubleR * doubleR) + (doubleG * doubleG) + (doubleB*doubleB) - (doubleR * doubleG) - (doubleR * doubleB) - (doubleG * doubleB)));
     }
 
-    return HSI(h, s, i);
+    return ColourModel_HSI(h, s, i);
 }
 
-ColorConversion::RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
+ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
     int r = (int)(255 * (cmy->Cyan - 1));
     int g = (int)(255 * (cmy->Magenta - 1));
     int b = (int)(255 * (cmy->Yellow - 1));
 
-    return RGB(r, g, b);
+    return ColourModel_RGB(r, g, b);
 }
 
-ColorConversion::RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
+ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
     int r = (int)(255 * (1 - cmyk->Cyan) * (1 - cmyk->Black));
     int g = (int)(255 * (1 - cmyk->Magenta) * (1 - cmyk->Black));
     int b = (int)(255 * (1 - cmyk->Yellow) * (1 - cmyk->Black));
 
-    return RGB(r, g, b);
+    return ColourModel_RGB(r, g, b);
 }
 
-ColorConversion::RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
+ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
 {
     int r = (int)(0);
     int g = (int)(0);
@@ -147,7 +145,7 @@ ColorConversion::RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
        b = (int) (i + (i * s) * cos(h-240) / cos(300-h));
     }
 
-    return RGB(r, g, b);
+    return ColourModel_RGB(r, g, b);
 
 }
 

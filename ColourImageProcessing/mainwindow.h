@@ -78,11 +78,11 @@ private:
     ColourModel_CMY* primary_CMY = new ColourModel_CMY(0,0,0);
     ColourModel_CMY* derived_CMY = new ColourModel_CMY(0,0,1);
 
-    ColourModel_CMYK* primary_CMYK = new ColourModel_CMYK(0,0,0);
-    ColourModel_CMYK* derived_CMYK = new ColourModel_CMYK(0,0,1);
+    ColourModel_CMYK* primary_CMYK = new ColourModel_CMYK(0,0,0,0);
+    ColourModel_CMYK* derived_CMYK = new ColourModel_CMYK(0,0,0,1);
 
     ColourModel_HSI* primary_HSI = new ColourModel_HSI(0,0,0);
-    ColourModel_HSI derived_HSI = new ColourModel_HSI(0,0,1);
+    ColourModel_HSI* derived_HSI = new ColourModel_HSI(0,0,1);
 
     //colours
     int red;

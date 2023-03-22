@@ -126,16 +126,13 @@ void MainWindow::on_Open_Clicked(){
         //fix RGBHistogramWidget and make it work with all colour models?
         QString colourModel = colourModelComboBox->currentText();
                         if (colourModel == "RGB") {
-                            RGB_histogram->setImage(image);
+                            RGB_histogram->setImageRGB(image);
                         } else if (colourModel == "CMY") {
-                            //Apply CMY image processing
-                            //...
+                            RGB_histogram->setImageCMY(image);
                         } else if (colourModel == "CMYK") {
-                            // Apply CMYK image processing
-                            // ...
+                            RGB_histogram->setImageCMYK(image);
                         } else if (colourModel == "HSI") {
-                            // Apply HSI image processing
-                            // ...
+                            RGB_histogram->setImageHSI(image);
                         }
 
     }

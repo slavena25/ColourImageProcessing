@@ -1,4 +1,7 @@
 #include "rgbhistogramwidget.h"
+#include "colorconversion.h"
+//#include "colorconversion.cpp"
+
 
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
@@ -7,7 +10,7 @@ RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
     m_blueValues.resize(256);
 }
 
-void RGBHistogramWidget::setImage(const QImage &image)
+void RGBHistogramWidget::setImageCMY(const QImage &image)
 {
     m_redValues.fill(0);
     m_greenValues.fill(0);
@@ -19,6 +22,81 @@ void RGBHistogramWidget::setImage(const QImage &image)
             int red = qRed(pixel);
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
+
+            ColourModel_RGB *rgb = new ColourModel_RGB(red, green, blue);
+            ColourModel_CMY cmy = ColorConversion::RGBtoCMY(rgb);
+            rgb = ColorConversion::CMYtoRGB(cmy);
+
+
+            ++m_redValues[red];
+            ++m_greenValues[green];
+            ++m_blueValues[blue];
+        }
+    }
+
+    update();
+}
+
+void RGBHistogramWidget::setImageRGB(const QImage &image)
+{
+    m_redValues.fill(0);
+    m_greenValues.fill(0);
+    m_blueValues.fill(0);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            int red = qRed(pixel);
+            int green = qGreen(pixel);
+            int blue = qBlue(pixel);
+
+
+            ++m_redValues[red];
+            ++m_greenValues[green];
+            ++m_blueValues[blue];
+        }
+    }
+
+    update();
+}
+
+void RGBHistogramWidget::setImageCMYK(const QImage &image)
+{
+    m_redValues.fill(0);
+    m_greenValues.fill(0);
+    m_blueValues.fill(0);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            int red = qRed(pixel);
+            int green = qGreen(pixel);
+            int blue = qBlue(pixel);
+
+
+
+            ++m_redValues[red];
+            ++m_greenValues[green];
+            ++m_blueValues[blue];
+        }
+    }
+
+    update();
+}
+
+void RGBHistogramWidget::setImageHSI(const QImage &image)
+{
+    m_redValues.fill(0);
+    m_greenValues.fill(0);
+    m_blueValues.fill(0);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            int red = qRed(pixel);
+            int green = qGreen(pixel);
+            int blue = qBlue(pixel);
+
 
             ++m_redValues[red];
             ++m_greenValues[green];
@@ -53,7 +131,6 @@ void RGBHistogramWidget::paintEvent(QPaintEvent *event)
 
               painter.drawText(0, 10, QString("%1").arg(barHeight));
               painter.drawText(0, height() - 20, QString("0"));
-
 
           for (int i = 0; i < 256; ++i) {
               int redHeight = m_redValues[i] * height() / (width() * height());
