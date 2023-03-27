@@ -1,13 +1,12 @@
 #include "rgbhistogramwidget.h"
-#include "colorconversion.h"
-//#include "colorconversion.cpp"
-
 
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
     m_redValues.resize(256);
     m_greenValues.resize(256);
     m_blueValues.resize(256);
+
+    _colorConversion = new ColorConversion();
 }
 
 void RGBHistogramWidget::setImageCMY(const QImage &image)
@@ -23,10 +22,14 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
 
-            ColourModel_RGB *rgb = new ColourModel_RGB(red, green, blue);
-            ColourModel_CMY cmy = ColorConversion::RGBtoCMY(rgb);
-            rgb = ColorConversion::CMYtoRGB(cmy);
+            //first way, includes the creation of two rgb objects
+//            rgb_main = new ColourModel_RGB(red, green, blue);
+//            cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(rgb_main));
+//            rgb_converted = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
 
+            //second way, calls a new rgb model objects
+            cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(new ColourModel_RGB(red,green,blue)));
+            rgb_main = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
 
             ++m_redValues[red];
             ++m_greenValues[green];
