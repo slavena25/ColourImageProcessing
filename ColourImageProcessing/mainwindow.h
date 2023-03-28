@@ -69,6 +69,8 @@ private:
 
     QComboBox* colourModelComboBox;
 
+    QString fileName;
+
     RGBHistogramWidget* RGB_histogram; //HistogramWidget
 
     //colourModels

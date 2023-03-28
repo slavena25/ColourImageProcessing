@@ -1,4 +1,5 @@
 #include "rgbhistogramwidget.h"
+#include <stdlib.h>
 
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
@@ -22,14 +23,13 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
 
-            //first way, includes the creation of two rgb objects
-//            rgb_main = new ColourModel_RGB(red, green, blue);
-//            cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(rgb_main));
-//            rgb_converted = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
-
-            //second way, calls a new rgb model objects
             cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(new ColourModel_RGB(red,green,blue)));
             rgb_main = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
+
+            red = abs(rgb_main->getRed());
+            green = abs(rgb_main->getGreen());
+            blue = abs(rgb_main->getBlue());
+
 
             ++m_redValues[red];
             ++m_greenValues[green];
@@ -76,11 +76,17 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
 
+            cmyk = new ColourModel_CMYK(_colorConversion->RGBtoCMYK(new ColourModel_RGB(red,green,blue)));
+            rgb_main = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
+
+            int r = qRed(rgb_main->getRed());
+            int g = qGreen(rgb_main->getGreen());
+            int b = qBlue(rgb_main->getBlue());
 
 
-            ++m_redValues[red];
-            ++m_greenValues[green];
-            ++m_blueValues[blue];
+            ++m_redValues[r];
+            ++m_greenValues[g];
+            ++m_blueValues[b];
         }
     }
 
@@ -89,6 +95,7 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
 
 void RGBHistogramWidget::setImageHSI(const QImage &image)
 {
+
     m_redValues.fill(0);
     m_greenValues.fill(0);
     m_blueValues.fill(0);
@@ -100,10 +107,17 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
 
+            hsi = new ColourModel_HSI(_colorConversion->RGBtoHSI(new ColourModel_RGB(red,green,blue)));
+            rgb_main = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
 
-            ++m_redValues[red];
-            ++m_greenValues[green];
-            ++m_blueValues[blue];
+            int r = qRed(rgb_main->getRed());
+            int g = qGreen(rgb_main->getGreen());
+            int b = qBlue(rgb_main->getBlue());
+
+
+            ++m_redValues[r];
+            ++m_greenValues[g];
+            ++m_blueValues[b];
         }
     }
 
@@ -118,7 +132,7 @@ void RGBHistogramWidget::paintEvent(QPaintEvent *event)
 
       //paint the x and y axes
 
-      int barWidth = width() / 256;
+      int barWidth = width() / 255;
           int barHeight = height() - 20;
 
           // Draw the x-axis
@@ -135,14 +149,14 @@ void RGBHistogramWidget::paintEvent(QPaintEvent *event)
               painter.drawText(0, 10, QString("%1").arg(barHeight));
               painter.drawText(0, height() - 20, QString("0"));
 
-          for (int i = 0; i < 256; ++i) {
+          for (int i = 0; i < 255; ++i) {
               int redHeight = m_redValues[i] * height() / (width() * height());
               int greenHeight = m_greenValues[i] * height() / (width() * height());
               int blueHeight = m_blueValues[i] * height() / (width() * height());
 
-              QRect blueBar(i * barWidth, height() - blueHeight - 20, barWidth, blueHeight);
-              QRect greenBar(i * barWidth, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
-              QRect redBar(i * barWidth, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
+              QRect blueBar(i * barWidth + 20, height() - blueHeight - 20, barWidth, blueHeight);
+              QRect greenBar(i * barWidth + 20, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
+              QRect redBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
 
               painter.fillRect(redBar, Qt::red);
               painter.fillRect(greenBar, Qt::green);

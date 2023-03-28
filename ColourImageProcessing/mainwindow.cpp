@@ -104,7 +104,7 @@ void MainWindow::connectSignals(){
 }
 
 void MainWindow::on_Open_Clicked(){
-    QString fileName = QFileDialog::getOpenFileName(this,"Open Image", "", "Image Files (*.png *.jpg *.bmp *.tiff)");
+    fileName = QFileDialog::getOpenFileName(this,"Open Image", "", "Image Files (*.png *.jpg *.bmp *.tiff)");
     if(fileName.isEmpty()){
         return;
     }

@@ -149,23 +149,6 @@ ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
 
 }
 
-void ColorConversion::convertToCMY(ColourModel_CMY* cmy, ColourModel_RGB* rgb)
-{
-    RGBtoCMY(rgb);
-    CMYtoRGB(cmy);
-}
-
-void ColorConversion::convertToCMYK(ColourModel_CMYK* cmyk, ColourModel_RGB* rgb)
-{
-    RGBtoCMYK(rgb);
-    CMYKtoRGB(cmyk);
-}
-
-void ColorConversion::convertToHSI(ColourModel_HSI* hsi, ColourModel_RGB* rgb)
-{
-    RGBtoHSI(rgb);
-    HSItoRGB(hsi);
-}
 
 
 

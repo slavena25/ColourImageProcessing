@@ -28,6 +28,8 @@ private:
     ColourModel_RGB *rgb_main;
 //    ColourModel_RGB *rgb_converted;
     ColourModel_CMY *cmy;
+    ColourModel_CMYK *cmyk;
+    ColourModel_HSI *hsi;
 
 };
 
