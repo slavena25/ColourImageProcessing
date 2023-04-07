@@ -1,20 +1,85 @@
 #include "rgbhistogramwidget.h"
 #include <stdlib.h>
 
+//maybe the x/y-axis's max values have to be changed to 1 for cmy and cmyk, as those models values are always less than 1
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
-    m_redValues.resize(256);
-    m_greenValues.resize(256);
-    m_blueValues.resize(256);
+    //universal vectors that will be used in PaintEvent
+    //the vectors will be reset and new values will be added to them every time
+    //a setImage event is called,
+    //resize the vectors to 360, because that is what hsi uses as values
+    frst_Values.resize(360);
+    scnd_Values.resize(360);
+    thrd_Values.resize(360);
+    fourth_Values.resize(360);
 
     _colorConversion = new ColorConversion();
 }
 
+//set rgb histogram
+void RGBHistogramWidget::setImageRGB(const QImage &image)
+{
+    frst_Values.fill(0);
+    scnd_Values.fill(0);
+    thrd_Values.fill(0);
+    fourth_Values.fill(0);
+
+    QVector<double> redValues;
+    QVector<double> greenValue;
+    QVector<double> blueValue;
+
+    redValues.resize(256); //red
+    greenValue.resize(256); //green
+    blueValue.resize(256); //blue
+
+    redValues.fill(0);
+    greenValue.fill(0);
+    blueValue.fill(0);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            int red = qRed(pixel);
+            int green = qGreen(pixel);
+            int blue = qBlue(pixel);
+
+            ++redValues[red];
+            ++greenValue[green];
+            ++blueValue[blue];
+        }
+    }
+
+    frst_Values = redValues;
+    scnd_Values = greenValue;
+    thrd_Values = blueValue;
+
+    frstColor = Qt::red;
+    scndColor = Qt::green;
+    thrdColor = Qt::blue;
+    fourthColor = Qt::transparent;
+
+    update();
+}
+
+//set cmy histogram
 void RGBHistogramWidget::setImageCMY(const QImage &image)
 {
-    m_redValues.fill(0);
-    m_greenValues.fill(0);
-    m_blueValues.fill(0);
+    frst_Values.fill(0);
+    scnd_Values.fill(0);
+    thrd_Values.fill(0);
+    fourth_Values.fill(0);
+
+    QVector<double> magentaValues;
+    QVector<double> yellowValues;
+    QVector<double> cyanValues;
+
+    magentaValues.resize(256);
+    yellowValues.resize(256);
+    cyanValues.resize(256);
+
+    magentaValues.fill(0);
+    yellowValues.fill(0);
+    cyanValues.fill(0);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
@@ -24,71 +89,86 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
             int blue = qBlue(pixel);
 
             cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(new ColourModel_RGB(red,green,blue)));
-            rgb_main = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
+            //used for the change of the pixels in the picture
+                //rgb = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
 
-            red = abs(rgb_main->getRed());
-            green = abs(rgb_main->getGreen());
-            blue = abs(rgb_main->getBlue());
+            double cyan = abs(cmy->getCyan());
+            double magenta = abs(cmy->getMagenta());
+            double yellow = abs(cmy->getYellow());
 
-
-            ++m_redValues[red];
-            ++m_greenValues[green];
-            ++m_blueValues[blue];
+            //not correct
+            ++magentaValues[magenta];
+            ++yellowValues[yellow];
+            ++cyanValues[cyan];
         }
     }
 
-    update();
-}
+    frst_Values = magentaValues;
+    scnd_Values = yellowValues;
+    thrd_Values = cyanValues;
 
-void RGBHistogramWidget::setImageRGB(const QImage &image)
-{
-    m_redValues.fill(0);
-    m_greenValues.fill(0);
-    m_blueValues.fill(0);
-
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
-            QRgb pixel = image.pixel(x, y);
-            int red = qRed(pixel);
-            int green = qGreen(pixel);
-            int blue = qBlue(pixel);
-
-
-            ++m_redValues[red];
-            ++m_greenValues[green];
-            ++m_blueValues[blue];
-        }
-    }
+    frstColor = Qt::magenta;
+    scndColor = Qt::yellow;
+    thrdColor = Qt::cyan;
+    fourthColor = Qt::transparent;
 
     update();
 }
 
 void RGBHistogramWidget::setImageCMYK(const QImage &image)
 {
-    m_redValues.fill(0);
-    m_greenValues.fill(0);
-    m_blueValues.fill(0);
+    frst_Values.fill(0);
+    scnd_Values.fill(0);
+    thrd_Values.fill(0);
+    fourth_Values.fill(0);
+
+    QVector<double> magentaValues;
+    QVector<double> yellowValues;
+    QVector<double> cyanValues;
+    QVector<double> blackValues;
+
+    magentaValues.resize(256);
+    yellowValues.resize(256);
+    cyanValues.resize(256);
+    blackValues.resize(256);
+
+    magentaValues.fill(0);
+    yellowValues.fill(0);
+    cyanValues.fill(0);
+    blackValues.fill(0);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
             QRgb pixel = image.pixel(x, y);
-            int red = qRed(pixel);
-            int green = qGreen(pixel);
-            int blue = qBlue(pixel);
+            double red = qRed(pixel);
+            double green = qGreen(pixel);
+            double blue = qBlue(pixel);
 
             cmyk = new ColourModel_CMYK(_colorConversion->RGBtoCMYK(new ColourModel_RGB(red,green,blue)));
-            rgb_main = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
+            //used for the change of the pixels in the picture
+                //rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
 
-            int r = qRed(rgb_main->getRed());
-            int g = qGreen(rgb_main->getGreen());
-            int b = qBlue(rgb_main->getBlue());
+            double cyan = abs(cmyk->getCyan());
+            double magenta = abs(cmyk->getMagenta());
+            double yellow = abs(cmyk->getYellow());
+            double black = abs(cmyk->getBlack());
 
-
-            ++m_redValues[r];
-            ++m_greenValues[g];
-            ++m_blueValues[b];
+            ++magentaValues[magenta];
+            ++yellowValues[yellow];
+            ++cyanValues[cyan];
+            ++blackValues[black];
         }
     }
+
+    frst_Values = magentaValues;
+    scnd_Values = yellowValues;
+    thrd_Values = cyanValues;
+    fourth_Values = blackValues;
+
+    frstColor = Qt::magenta;
+    scndColor = Qt::yellow;
+    thrdColor = Qt::cyan;
+    fourthColor = Qt::black;
 
     update();
 }
@@ -96,9 +176,22 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
 void RGBHistogramWidget::setImageHSI(const QImage &image)
 {
 
-    m_redValues.fill(0);
-    m_greenValues.fill(0);
-    m_blueValues.fill(0);
+    frst_Values.fill(0);
+    scnd_Values.fill(0);
+    thrd_Values.fill(0);
+    fourth_Values.fill(0);
+
+    QVector<double> hueValues;
+    QVector<double> saturationValues;
+    QVector<double> intensityValues;
+
+    hueValues.resize(360);
+    saturationValues.resize(360);
+    intensityValues.resize(360);
+
+    hueValues.fill(0);
+    saturationValues.fill(0);
+    intensityValues.fill(0);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
@@ -108,18 +201,27 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
             int blue = qBlue(pixel);
 
             hsi = new ColourModel_HSI(_colorConversion->RGBtoHSI(new ColourModel_RGB(red,green,blue)));
-            rgb_main = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
+            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
 
-            int r = qRed(rgb_main->getRed());
-            int g = qGreen(rgb_main->getGreen());
-            int b = qBlue(rgb_main->getBlue());
+            double hue = abs(hsi->getHue());
+            double saturation = abs(hsi->getSaturation());
+            double intensity = abs(hsi->getIntensity());
 
-
-            ++m_redValues[r];
-            ++m_greenValues[g];
-            ++m_blueValues[b];
+            ++hueValues[hue];
+            ++saturationValues[saturation];
+            ++intensityValues[intensity];
         }
     }
+
+    frst_Values = hueValues;
+    scnd_Values = saturationValues;
+    thrd_Values = intensityValues;
+
+    //colors?
+    /*    frstColor = Qt::magenta;
+    scndColor = Qt::yellow;
+    thrdColor = Qt::cyan;
+    fourthColor = Qt::transparent;*/
 
     update();
 }
@@ -150,18 +252,27 @@ void RGBHistogramWidget::paintEvent(QPaintEvent *event)
               painter.drawText(0, height() - 20, QString("0"));
 
           for (int i = 0; i < 255; ++i) {
-              int redHeight = m_redValues[i] * height() / (width() * height());
-              int greenHeight = m_greenValues[i] * height() / (width() * height());
-              int blueHeight = m_blueValues[i] * height() / (width() * height());
+              int redHeight = frst_Values[i] * height() / (width() * height());
+              int greenHeight = scnd_Values[i] * height() / (width() * height());
+              int blueHeight = thrd_Values[i] * height() / (width() * height());
+              int blackHeight = fourth_Values[i] * height() / (width() * height());
 
               QRect blueBar(i * barWidth + 20, height() - blueHeight - 20, barWidth, blueHeight);
               QRect greenBar(i * barWidth + 20, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
               QRect redBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
+              QRect blackBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - blackHeight - 20, barWidth, blackHeight);
 
-              painter.fillRect(redBar, Qt::red);
-              painter.fillRect(greenBar, Qt::green);
-              painter.fillRect(blueBar, Qt::blue);
+              painter.fillRect(redBar, frstColor);
+              painter.fillRect(greenBar, scndColor);
+              painter.fillRect(blueBar, thrdColor);
+              painter.fillRect(blackBar,fourthColor);
 
 
       }
-  }
+}
+
+//add a variable for the colors, that will be changed in every function
+//add a fourth qvector that will be empty and will only fill up in cmyk,
+//make all of the vectors of size 360 (for hsi), however in the functions themselves
+//make an iwidget class and make histogramwidgets for all of the models
+

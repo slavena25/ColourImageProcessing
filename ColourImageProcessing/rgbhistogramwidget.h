@@ -4,9 +4,10 @@
 #include <QWidget>
 #include <QVector>
 #include <QPainter>
+#include <QColor>
+#include <QColorDialog>
 
 #include "colorconversion.h"
-
 
 class RGBHistogramWidget : public QWidget
 {
@@ -17,16 +18,25 @@ public:
     void setImageCMYK(const QImage &image);
     void setImageHSI(const QImage &image);
 
-protected:
+//protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QVector<int> m_redValues;
-    QVector<int> m_greenValues;
-    QVector<int> m_blueValues;
+    //vectors;
+    QVector<double> frst_Values;
+    QVector<double> scnd_Values;
+    QVector<double> thrd_Values;
+    QVector<double> fourth_Values;
+
+    //QGradient colors
+    QColor frstColor;
+    QColor scndColor;
+    QColor thrdColor;
+    QColor fourthColor;
+
+    //Objects
     ColorConversion *_colorConversion;
-    ColourModel_RGB *rgb_main;
-//    ColourModel_RGB *rgb_converted;
+    ColourModel_RGB *rgb;
     ColourModel_CMY *cmy;
     ColourModel_CMYK *cmyk;
     ColourModel_HSI *hsi;

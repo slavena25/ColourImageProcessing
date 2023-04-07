@@ -104,11 +104,18 @@ void MainWindow::connectSignals(){
 }
 
 void MainWindow::on_Open_Clicked(){
+    //when opening a file, chech if the qLineEdit, that will display the path is empty
+    if(!openPath->text().isEmpty()){
+        openPath->clear();
+    }
+
+    //open file, if file is empty - do nothing
     fileName = QFileDialog::getOpenFileName(this,"Open Image", "", "Image Files (*.png *.jpg *.bmp *.tiff)");
     if(fileName.isEmpty()){
         return;
     }
 
+    //display the path to the file in the qLineEdit
     openPath->insert(fileName);
     openPath->setCursorPosition(0);
     openPath->setToolTip(fileName);
@@ -153,10 +160,16 @@ void MainWindow::on_Save_Clicked(){
 
 }
 
-//works
-void MainWindow::colourModelComboBox_CurrentIndexChanged(int){
-    qDebug() << "Works";
-    if(primary_RGB->Equals(derived_RGB)){
-        qDebug() << "This is ok";
+void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
+    QImage image(fileName);
+    QString colourModel = colourModelComboBox->currentText();
+    if (colourModel == "RGB") {
+        RGB_histogram->setImageRGB(image);
+    } else if (colourModel == "CMY") {
+        RGB_histogram->setImageCMY(image);
+    } else if (colourModel == "CMYK") {
+        RGB_histogram->setImageCMYK(image);
+    } else if (colourModel == "HSI") {
+        RGB_histogram->setImageHSI(image);
     }
 }
