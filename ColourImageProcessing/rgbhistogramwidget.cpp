@@ -1,24 +1,61 @@
 #include "rgbhistogramwidget.h"
-#include <stdlib.h>
 
-//maybe the x/y-axis's max values have to be changed to 1 for cmy and cmyk, as those models values are always less than 1
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
-    //universal vectors that will be used in PaintEvent
-    //the vectors will be reset and new values will be added to them every time
-    //a setImage event is called,
+    HistogramWidgetInit();
+}
+
+void RGBHistogramWidget::HistogramWidgetInit(){
+    //universal vectors that will be used in setChart()
+    //the vectors will be reset and new values will be added to them every time;
     //resize the vectors to 360, because that is what hsi uses as values
     frst_Values.resize(360);
     scnd_Values.resize(360);
     thrd_Values.resize(360);
     fourth_Values.resize(360);
 
+    //intialize colorConversion class
     _colorConversion = new ColorConversion();
+
+    //set up the layout
+    grLayout = new QGridLayout();
+    this->setLayout(grLayout);
+
+    //set up BarSeries
+    frstColorSet = new QBarSet("frstColor");
+    scndColorSet = new QBarSet("scndColor");
+    thrdColorSet = new QBarSet("thrdColor");
+    fourthColorSet = new QBarSet("");
+
+    //set up QStackedBarSeries
+    stackedSeries = new QStackedBarSeries();
+    stackedSeries->append(frstColorSet);
+    stackedSeries->append(scndColorSet);
+    stackedSeries->append(thrdColorSet);
+    stackedSeries->append(fourthColorSet);
+
+    //set up chart
+    histogramChart = new QChart();
+    histogramChart->setTitle(chartTitle); //set title
+    histogramChart->setAnimationOptions(QChart::SeriesAnimations); //set animation
+    histogramChart->legend()->setVisible(true); //set the legend visible
+    histogramChart->legend()->setAlignment(Qt::AlignBottom);
+
+    //set up the chartView
+    histogramChartView = new QChartView();
+
+    //display the chart using the chartView
+    histogramChartView->setChart(histogramChart);
+    histogramChartView->setRenderHint(QPainter::Antialiasing);
+
+    //add the chartView to the layout
+    grLayout->addWidget(histogramChartView);
 }
 
 //set rgb histogram
 void RGBHistogramWidget::setImageRGB(const QImage &image)
 {
+
     frst_Values.fill(0);
     scnd_Values.fill(0);
     thrd_Values.fill(0);
@@ -58,7 +95,12 @@ void RGBHistogramWidget::setImageRGB(const QImage &image)
     thrdColor = Qt::blue;
     fourthColor = Qt::transparent;
 
-    update();
+    frstColorName = "Red";
+    scndColorName = "Blue";
+    thrdColorName = "Green";
+
+    setChart();
+
 }
 
 //set cmy histogram
@@ -90,7 +132,7 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
 
             cmy = new ColourModel_CMY(_colorConversion->RGBtoCMY(new ColourModel_RGB(red,green,blue)));
             //used for the change of the pixels in the picture
-                //rgb = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
+            //rgb = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
 
             double cyan = abs(cmy->getCyan());
             double magenta = abs(cmy->getMagenta());
@@ -112,7 +154,11 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
     thrdColor = Qt::cyan;
     fourthColor = Qt::transparent;
 
-    update();
+    frstColorName = "Magenta";
+    scndColorName = "Yellow";
+    thrdColorName = "Cyan";
+
+    setChart();
 }
 
 void RGBHistogramWidget::setImageCMYK(const QImage &image)
@@ -146,7 +192,7 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
 
             cmyk = new ColourModel_CMYK(_colorConversion->RGBtoCMYK(new ColourModel_RGB(red,green,blue)));
             //used for the change of the pixels in the picture
-                //rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
+            //rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
 
             double cyan = abs(cmyk->getCyan());
             double magenta = abs(cmyk->getMagenta());
@@ -170,7 +216,8 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
     thrdColor = Qt::cyan;
     fourthColor = Qt::black;
 
-    update();
+    //    update();
+    setChart();
 }
 
 void RGBHistogramWidget::setImageHSI(const QImage &image)
@@ -223,56 +270,87 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
     thrdColor = Qt::cyan;
     fourthColor = Qt::transparent;*/
 
-    update();
+    //    update();
+    setChart();
 }
 
-void RGBHistogramWidget::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event);
+void RGBHistogramWidget::setChart(){
+    //remove the series first in case there have been already some added
+    //    histogramChart->removeAllSeries();
 
-      QPainter painter(this);
+    //set the labels for all of the colors
+    frstColorSet->setLabel(frstColorName);
+    scndColorSet->setLabel(scndColorName);
+    thrdColorSet->setLabel(thrdColorName);
+    fourthColorSet->setLabel(fourthColorName);
 
-      //paint the x and y axes
+    //set the colors for all of the colors
+    frstColorSet->setColor(frstColor);
+    scndColorSet->setColor(scndColor);
+    thrdColorSet->setColor(thrdColor);
+    fourthColorSet->setColor(fourthColor);
 
-      int barWidth = width() / 255;
-          int barHeight = height() - 20;
+    //add the values to the series
+    for(int i = 0; i < frst_Values.length() - 1; i++){
+        *frstColorSet << frst_Values.at(i);
+        *scndColorSet << scnd_Values.at(i);
+        *thrdColorSet << thrd_Values.at(i);
+        *fourthColorSet << fourth_Values.at(i);
+    }
 
-          // Draw the x-axis
-          painter.drawLine(0, height() - 20, width(), height() - 20);
+    //add the series to the chart
+    histogramChart->addSeries(stackedSeries);
 
-          // Draw the y-axis
-          painter.drawLine(20, 0, 20, height());
-
-                // drawing the labels on the histogram widget
-              painter.drawText(0, height(), QString("0"));
-              painter.drawText(width() - 20, height(), QString("255"));
-
-
-              painter.drawText(0, 10, QString("%1").arg(barHeight));
-              painter.drawText(0, height() - 20, QString("0"));
-
-          for (int i = 0; i < 255; ++i) {
-              int redHeight = frst_Values[i] * height() / (width() * height());
-              int greenHeight = scnd_Values[i] * height() / (width() * height());
-              int blueHeight = thrd_Values[i] * height() / (width() * height());
-              int blackHeight = fourth_Values[i] * height() / (width() * height());
-
-              QRect blueBar(i * barWidth + 20, height() - blueHeight - 20, barWidth, blueHeight);
-              QRect greenBar(i * barWidth + 20, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
-              QRect redBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
-              QRect blackBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - blackHeight - 20, barWidth, blackHeight);
-
-              painter.fillRect(redBar, frstColor);
-              painter.fillRect(greenBar, scndColor);
-              painter.fillRect(blueBar, thrdColor);
-              painter.fillRect(blackBar,fourthColor);
+    //create the default axis
+    histogramChart->createDefaultAxes(); // set the axis
 
 
-      }
 }
 
-//add a variable for the colors, that will be changed in every function
-//add a fourth qvector that will be empty and will only fill up in cmyk,
-//make all of the vectors of size 360 (for hsi), however in the functions themselves
-//make an iwidget class and make histogramwidgets for all of the models
+
+//void RGBHistogramWidget::paintEvent(QPaintEvent *event)
+//{
+//    Q_UNUSED(event);
+
+//      QPainter painter(this);
+
+//      //paint the x and y axes
+
+//      int barWidth = width() / 255;
+//          int barHeight = height() - 20;
+
+//          // Draw the x-axis
+//          painter.drawLine(0, height() - 20, width(), height() - 20);
+
+//          // Draw the y-axis
+//          painter.drawLine(20, 0, 20, height());
+
+//                // drawing the labels on the histogram widget
+//              painter.drawText(0, height(), QString("0"));
+//              painter.drawText(width() - 20, height(), QString("255"));
+
+
+//              painter.drawText(0, 10, QString("%1").arg(barHeight));
+//              painter.drawText(0, height() - 20, QString("0"));
+
+//          for (int i = 0; i < 255; ++i) {
+//              int redHeight = frst_Values[i] * height() / (width() * height());
+//              int greenHeight = scnd_Values[i] * height() / (width() * height());
+//              int blueHeight = thrd_Values[i] * height() / (width() * height());
+//              int blackHeight = fourth_Values[i] * height() / (width() * height());
+
+//              QRect blueBar(i * barWidth + 20, height() - blueHeight - 20, barWidth, blueHeight);
+//              QRect greenBar(i * barWidth + 20, height() - blueHeight - greenHeight - 20, barWidth, greenHeight);
+//              QRect redBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - 20, barWidth, redHeight);
+//              QRect blackBar(i * barWidth + 20, height() - blueHeight - greenHeight - redHeight - blackHeight - 20, barWidth, blackHeight);
+
+//              painter.fillRect(redBar, frstColor);
+//              painter.fillRect(greenBar, scndColor);
+//              painter.fillRect(blueBar, thrdColor);
+//              painter.fillRect(blackBar,fourthColor);
+
+
+//      }
+
+//}
 
