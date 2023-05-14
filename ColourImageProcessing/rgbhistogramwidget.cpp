@@ -280,6 +280,11 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
 void RGBHistogramWidget::setChart(){
     //remove the series first in case there have been already some added
         //histogramChart->removeAllSeries();
+    //maybe has to be changed for hsi
+    frstColorSet->remove(0, 360);
+    scndColorSet->remove(0, 360);
+    thrdColorSet->remove(0, 360);
+    fourthColorSet->remove(0, 360);
 
     //set the labels for all of the colors
     frstColorSet->setLabel(frstColorName);
