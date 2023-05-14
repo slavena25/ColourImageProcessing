@@ -13,6 +13,7 @@
 #include <QtCharts/QBarSet>
 #include <QtCharts/QLegend>
 #include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QValueAxis>
 #include <stdlib.h>
 
 #include "colorconversion.h"
@@ -54,6 +55,7 @@ private:
 
     //QChart
     QChart *histogramChart;
+    int axisXMax;
 
     //Title of the chart
     const QString chartTitle = "Histogram Chart";

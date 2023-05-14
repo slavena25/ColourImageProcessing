@@ -55,7 +55,6 @@ void RGBHistogramWidget::HistogramWidgetInit(){
 //set rgb histogram
 void RGBHistogramWidget::setImageRGB(const QImage &image)
 {
-
     frst_Values.fill(0);
     scnd_Values.fill(0);
     thrd_Values.fill(0);
@@ -99,8 +98,9 @@ void RGBHistogramWidget::setImageRGB(const QImage &image)
     scndColorName = "Blue";
     thrdColorName = "Green";
 
-    setChart();
+    axisXMax = 255;
 
+    setChart();
 }
 
 //set cmy histogram
@@ -139,9 +139,9 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
             double yellow = abs(cmy->getYellow());
 
             //not correct
-            ++magentaValues[magenta];
-            ++yellowValues[yellow];
-            ++cyanValues[cyan];
+            ++magentaValues[magenta * 100];
+            ++yellowValues[yellow * 100];
+            ++cyanValues[cyan * 100];
         }
     }
 
@@ -157,6 +157,8 @@ void RGBHistogramWidget::setImageCMY(const QImage &image)
     frstColorName = "Magenta";
     scndColorName = "Yellow";
     thrdColorName = "Cyan";
+
+    axisXMax = 100;
 
     setChart();
 }
@@ -199,10 +201,10 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
             double yellow = abs(cmyk->getYellow());
             double black = abs(cmyk->getBlack());
 
-            ++magentaValues[magenta];
-            ++yellowValues[yellow];
-            ++cyanValues[cyan];
-            ++blackValues[black];
+            ++magentaValues[magenta * 100];
+            ++yellowValues[yellow * 100];
+            ++cyanValues[cyan * 100];
+            ++blackValues[black * 100];
         }
     }
 
@@ -216,7 +218,8 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
     thrdColor = Qt::cyan;
     fourthColor = Qt::black;
 
-    //    update();
+    axisXMax = 100;
+
     setChart();
 }
 
@@ -271,12 +274,12 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
     fourthColor = Qt::transparent;*/
 
     //    update();
-    setChart();
+//    setChart();
 }
 
 void RGBHistogramWidget::setChart(){
     //remove the series first in case there have been already some added
-    //    histogramChart->removeAllSeries();
+        //histogramChart->removeAllSeries();
 
     //set the labels for all of the colors
     frstColorSet->setLabel(frstColorName);
@@ -303,10 +306,11 @@ void RGBHistogramWidget::setChart(){
 
     //create the default axis
     histogramChart->createDefaultAxes(); // set the axis
-
+    histogramChart->axes(Qt::Horizontal).back()->setRange(0, axisXMax);
+    histogramChart->axes(Qt::Horizontal).back()->setTitleText("axis x");
+    histogramChart->axes(Qt::Vertical).back()->setTitleText("axis y");
 
 }
-
 
 //void RGBHistogramWidget::paintEvent(QPaintEvent *event)
 //{
