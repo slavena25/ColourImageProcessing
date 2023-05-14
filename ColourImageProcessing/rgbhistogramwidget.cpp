@@ -218,6 +218,11 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
     thrdColor = Qt::cyan;
     fourthColor = Qt::black;
 
+    frstColorName = "Magenta";
+    scndColorName = "Yellow";
+    thrdColorName = "Cyan";
+    fourthColorName = "Black";
+
     axisXMax = 100;
 
     setChart();
@@ -267,14 +272,17 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
     scnd_Values = saturationValues;
     thrd_Values = intensityValues;
 
-    //colors?
-    /*    frstColor = Qt::magenta;
-    scndColor = Qt::yellow;
-    thrdColor = Qt::cyan;
-    fourthColor = Qt::transparent;*/
+    frstColor = Qt::black;
+    scndColor = Qt::darkGray;
+    thrdColor = Qt::lightGray;
 
-    //    update();
-//    setChart();
+    frstColorName = "Hue";
+    scndColorName = "Saturation";
+    thrdColorName = "Intensity";
+
+    axisXMax = 100;
+
+    setChart();
 }
 
 void RGBHistogramWidget::setChart(){

@@ -57,25 +57,38 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 
     i = doubleRGB / 3;
 
-    if(doubleRGB == 765)
-    {
-        s = 0;
-        h = 0;
-    }
+    int min = MinVal(doubleR, MinVal(doubleG, doubleB));
 
-    if(i > 0)
-    {
-        s = 1 - MinVal(doubleR, MinVal(doubleG, doubleB));
-    }
-    else if(i == 0)
+    s = 1 - 3*(min / doubleRGB);
+
+    if(s < 0.00001)
     {
         s = 0;
     }
-
-    if(doubleG >= doubleB)
+    else if(s > 0.99999)
     {
-        h = 360 - acos(doubleR - (doubleG / 2) - (doubleB / 2) / sqrt((doubleR * doubleR) + (doubleG * doubleG) + (doubleB*doubleB) - (doubleR * doubleG) - (doubleR * doubleB) - (doubleG * doubleB)));
+        s = 1;
     }
+
+    if(s != 0)
+    {
+        h = 0.5 * ((doubleR - doubleG) + (doubleR - doubleB)) / sqrt(((doubleR - doubleG) * (doubleR - doubleG) + (doubleR - doubleB) * (doubleG - doubleB)));
+        h = acos(h);
+
+        if(doubleB <= doubleG)
+        {
+            h = h;
+        }
+        else
+        {
+            h = ((360 * 3.14159265) / 180.0) - h;
+        }
+    }
+
+    h = (h * 180) / 3.14159265;
+    s = s*100;
+    i = i;
+
 
     return ColourModel_HSI(h, s, i);
 }
