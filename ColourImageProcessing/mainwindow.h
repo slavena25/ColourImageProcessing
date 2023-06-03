@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QPalette>
 #include <QDebug>
+#include <QShortcut>
 
 #include "rgbhistogramwidget.h"
 #include "ui_mainwindow.h"
@@ -38,6 +39,10 @@ public:
 private slots:
     void on_Open_Clicked();
     void on_Save_Clicked();
+    void on_ShowChangeChannelBox_clicked();
+    void on_ChangeColourChannelButton_clicked();
+    void on_ShortcutHideColourChangingCannel_clicked();
+    void on_RevertImageButton_clicked();
     void colourModelComboBox_CurrentIndexChanged(int index);
 
 private:
@@ -53,14 +58,29 @@ private:
     QVBoxLayout* imageViewerLayout;
     QVBoxLayout* colourModelLayout;
     QVBoxLayout* centralWidgetLayout;
+    QVBoxLayout* changeColourChannelLayout;
+    QHBoxLayout* getColourChannelLayout;
+    QHBoxLayout* setColourChannelLayout;
+    QHBoxLayout* colourChangingButtonLayout;
 
     QLineEdit* openPath;
+    QLineEdit* getRed;
+    QLineEdit* getGreen;
+    QLineEdit* getBlue;
+    QLineEdit* setRed;
+    QLineEdit* setGreen;
+    QLineEdit* setBlue;
 
     QPushButton* openImage;
     QPushButton* saveImage;
+    QPushButton* ShowChangeChannelBox;
+    QPushButton* changeColourChannelButton;
+    QPushButton* revertImageButton;
 
     QLabel* header;
     QLabel* imageViewer;
+    QLabel* getColourChannelLabel;
+    QLabel* setColourChannelLabel;
 
     QScrollArea* imageScroller;
 

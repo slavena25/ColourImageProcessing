@@ -20,10 +20,17 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
     double doubleG = (double)rgb->Green / 255;
     double doubleB = (double)rgb->Blue / 255;
 
+    double c = 0;
+    double m = 0;
+    double y = 0;
+
     double k = 1 - MaxVal(MaxVal(doubleR, doubleG), doubleB);
-    double c = (1 - doubleR - k)/(1 - k);
-    double m = (1 - doubleG - k)/(1 - k);
-    double y = (1 - doubleB - k)/(1 - k);
+
+    if(k != 1){
+        c = (1 - doubleR - k)/(1 - k);
+        m = (1 - doubleG - k)/(1 - k);
+        y = (1 - doubleB - k)/(1 - k);
+    }
 
     return ColourModel_CMYK(c, m, y , k );
 
@@ -53,11 +60,18 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
     double s;
     double i;
 
+    if(doubleR == 0 && doubleG == 0 && doubleB == 0){
+        h = 0;
+        s = 0;
+        i = 0;
+        return ColourModel_HSI(h, s, i);
+    }
+
     double doubleRGB = (doubleR + doubleG + doubleB);
 
     i = doubleRGB / 3;
 
-    int min = MinVal(doubleR, MinVal(doubleG, doubleB));
+    double min = MinVal(doubleR, MinVal(doubleG, doubleB));
 
     s = 1 - 3*(min / doubleRGB);
 

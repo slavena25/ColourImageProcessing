@@ -22,15 +22,13 @@ class RGBHistogramWidget : public QWidget
 {
 public:
     RGBHistogramWidget(QWidget *parent = nullptr);
+    ~RGBHistogramWidget();
     void HistogramWidgetInit();
     void setImageRGB(const QImage &image);
     void setImageCMY(const QImage &image);
     void setImageCMYK(const QImage &image);
     void setImageHSI(const QImage &image);
     void setChart();
-
-//protected:
-//    void paintEvent(QPaintEvent *event) override;
 
 private:
     //-------------Chart-------------

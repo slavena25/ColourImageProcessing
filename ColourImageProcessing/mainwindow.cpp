@@ -24,6 +24,74 @@ void MainWindow::initWidget(){
 
     ui_centralWidget = new QWidget();
 
+    //------------------Change Colour Channel------------------
+
+    getColourChannelLabel = new QLabel("Get desired colour channel:");
+    getColourChannelLabel->setVisible(false);
+
+    getRed = new QLineEdit();
+    getRed->setValidator(new QIntValidator(0, 256, this));
+    getRed->setPlaceholderText("red");
+    getRed->setVisible(false);
+
+    getGreen = new QLineEdit();
+    getGreen->setValidator(new QIntValidator(0, 256, this));
+    getGreen->setPlaceholderText("green");
+    getGreen->setVisible(false);
+
+    getBlue = new QLineEdit();
+    getBlue->setValidator(new QIntValidator(0, 256, this));
+    getBlue->setPlaceholderText("blue");
+    getBlue->setVisible(false);
+
+    getColourChannelLayout = new QHBoxLayout;
+    getColourChannelLayout->addWidget(getRed);
+    getColourChannelLayout->addWidget(getGreen);
+    getColourChannelLayout->addWidget(getBlue);
+
+    setColourChannelLabel = new QLabel("Set desired colour channel:");
+    setColourChannelLabel->setVisible(false);
+
+    setRed = new QLineEdit();
+    setRed->setValidator(new QIntValidator(0, 256, this));
+    setRed->setPlaceholderText("new Red");
+    setRed->setVisible(false);
+
+    setGreen = new QLineEdit();
+    setGreen->setValidator(new QIntValidator(0, 256, this));
+    setGreen->setPlaceholderText("new green");
+    setGreen->setVisible(false);
+
+    setBlue = new QLineEdit();
+    setBlue->setValidator(new QIntValidator(0, 256, this));
+    setBlue->setPlaceholderText("new blue");
+    setBlue->setVisible(false);
+
+    setColourChannelLayout = new QHBoxLayout;
+    setColourChannelLayout->addWidget(setRed);
+    setColourChannelLayout->addWidget(setGreen);
+    setColourChannelLayout->addWidget(setBlue);
+
+    changeColourChannelButton = new QPushButton("Change Colour Channel");
+    changeColourChannelButton->setVisible(false);
+
+    revertImageButton = new QPushButton("Revert Image to original");
+    revertImageButton->setVisible(false);
+
+    colourChangingButtonLayout = new QHBoxLayout;
+    colourChangingButtonLayout->addWidget(changeColourChannelButton);
+    colourChangingButtonLayout->addWidget(revertImageButton);
+
+    changeColourChannelLayout = new QVBoxLayout;
+    changeColourChannelLayout->addWidget(getColourChannelLabel, 0, Qt::AlignHCenter);
+    changeColourChannelLayout->addLayout(getColourChannelLayout);
+    changeColourChannelLayout->addWidget(setColourChannelLabel, 0, Qt::AlignHCenter);
+    changeColourChannelLayout->addLayout(setColourChannelLayout);
+    changeColourChannelLayout->addLayout(colourChangingButtonLayout);
+
+    //------------------QShortcut that will hide the colour channel changing section------------------
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_H), this, SLOT(on_ShortcutHideColourChangingCannel_clicked()));
+
     //------------------ImageViewer Layout------------------
 
     openPath = new QLineEdit();
@@ -33,10 +101,15 @@ void MainWindow::initWidget(){
     openImage = new QPushButton("Open");
     saveImage = new QPushButton("Save");
 
+    ShowChangeChannelBox = new QPushButton("🎨");
+    ShowChangeChannelBox->setFixedHeight(22);
+    ShowChangeChannelBox->setFixedWidth(30);
+
     buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(openPath);
     buttonLayout->addWidget(openImage);
     buttonLayout->addWidget(saveImage);
+    buttonLayout->addWidget(ShowChangeChannelBox);
 
     imageViewer = new QLabel();
     imageViewer->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -49,7 +122,7 @@ void MainWindow::initWidget(){
     imageViewerLayout = new QVBoxLayout();
     imageViewerLayout->addLayout(buttonLayout);
     imageViewerLayout->addWidget(imageScroller);
-
+    imageViewerLayout->addLayout(changeColourChannelLayout);
 
     //------------------ColourModel Layout------------------
 
@@ -100,6 +173,9 @@ void MainWindow::initWidget(){
 void MainWindow::connectSignals(){
     QObject::connect(openImage, SIGNAL(clicked()), this, SLOT(on_Open_Clicked()));
     QObject::connect(saveImage, SIGNAL(clicked()), this, SLOT(on_Save_Clicked()));
+    QObject::connect(ShowChangeChannelBox, SIGNAL(clicked()), this, SLOT(on_ShowChangeChannelBox_clicked()));
+    QObject::connect(changeColourChannelButton, SIGNAL(clicked()), this, SLOT(on_ChangeColourChannelButton_clicked()));
+    QObject::connect(revertImageButton, SIGNAL(clicked()), this, SLOT(on_RevertImageButton_clicked()));
     QObject::connect(colourModelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(colourModelComboBox_CurrentIndexChanged(int)));
 }
 
@@ -158,6 +234,63 @@ void MainWindow::on_Save_Clicked(){
         QMessageBox::warning(this, "Error", "Failed to save image.");
     }
 
+}
+
+void MainWindow::on_ShowChangeChannelBox_clicked(){
+    getColourChannelLabel->setVisible(true);
+    getRed->setVisible(true);
+    getGreen->setVisible(true);
+    getBlue->setVisible(true);
+    setColourChannelLabel->setVisible(true);
+    setRed->setVisible(true);
+    setGreen->setVisible(true);
+    setBlue->setVisible(true);
+    changeColourChannelButton->setVisible(true);
+    revertImageButton->setVisible(true);
+}
+
+void MainWindow::on_ShortcutHideColourChangingCannel_clicked(){
+    getColourChannelLabel->setVisible(false);
+    getRed->setVisible(false);
+    getGreen->setVisible(false);
+    getBlue->setVisible(false);
+    setColourChannelLabel->setVisible(false);
+    setRed->setVisible(false);
+    setGreen->setVisible(false);
+    setBlue->setVisible(false);
+    changeColourChannelButton->setVisible(false);
+    revertImageButton->setVisible(false);
+}
+
+void MainWindow::on_ChangeColourChannelButton_clicked(){
+
+    QImage _changedImage(fileName);
+
+    int getR = getRed->text().toInt();
+    int getG = getGreen->text().toInt();
+    int getB = getBlue->text().toInt();
+
+    int setR = setRed->text().toInt();
+    int setG = setGreen->text().toInt();
+    int setB = setBlue->text().toInt();
+
+    for(int row = 0; row < _changedImage.height(); row++){
+        for(int col = 0; col < _changedImage.width(); col++){
+            QColor _pixelColour = _changedImage.pixelColor(col, row);
+            QColor _searchColour(getR, getG, getB);
+            QColor _newColour(setR, setG, setB);
+            if(_pixelColour == _searchColour){
+                _changedImage.setPixelColor(col, row, _newColour);
+            }
+        }
+    }
+
+    imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
+}
+
+void MainWindow::on_RevertImageButton_clicked(){
+    QImage _originalImage(fileName);
+    imageViewer->setPixmap(QPixmap::fromImage(_originalImage));
 }
 
 void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
