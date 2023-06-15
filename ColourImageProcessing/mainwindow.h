@@ -39,16 +39,28 @@ public:
 private slots:
     void on_Open_Clicked();
     void on_Save_Clicked();
-    void on_ShowChangeChannelBox_clicked();
-    void on_ChangeColourChannelButton_clicked();
+    void on_ShowRedChannelChangeBox_clicked();
+    void on_ChangeRedChannelButton_clicked();
+    void on_ShowGreenChannelChangeBox_clicked();
+    void on_ChangeGreenChannelButton_clicked();
+    void on_ShowBlueChannelChangeBox_clicked();
+    void on_ChangeBlueChannelButton_clicked();
+    void on_ShowSwapPixelColourBox_clicked();
+    void on_ChangePixelColourButton_clicked();
     void on_ShortcutHideColourChangingCannel_clicked();
     void on_RevertImageButton_clicked();
     void colourModelComboBox_CurrentIndexChanged(int index);
 
 private:
+
     //functions
     void initWidget();
     void connectSignals();
+    void setVisiblePixelColourSwapLayout(bool visible);
+    void setVisibleRedChannelChangeLayout(bool visible);
+    void setVisibleGreenChannelChangeLayout(bool visible);
+    void setVisibleBlueChannelChangeLayout(bool visible);
+    QImage returnModifiedImage();
 
     //UI Widget initialization
     QWidget* ui_centralWidget;
@@ -58,34 +70,47 @@ private:
     QVBoxLayout* imageViewerLayout;
     QVBoxLayout* colourModelLayout;
     QVBoxLayout* centralWidgetLayout;
-    QVBoxLayout* changeColourChannelLayout;
-    QHBoxLayout* getColourChannelLayout;
-    QHBoxLayout* setColourChannelLayout;
-    QHBoxLayout* colourChangingButtonLayout;
+    QVBoxLayout* changePixelColourLayout;
+    QHBoxLayout* getPixelColourLayout;
+    QHBoxLayout* setPixelColourLayout;
+    QHBoxLayout* redColourChannelLayout;
+    QHBoxLayout* greenColourChannelLayout;
+    QHBoxLayout* blueColourChannelLayout;
+    QVBoxLayout* imageOptionsBarLayout;
 
     QLineEdit* openPath;
-    QLineEdit* getRed;
-    QLineEdit* getGreen;
-    QLineEdit* getBlue;
-    QLineEdit* setRed;
-    QLineEdit* setGreen;
-    QLineEdit* setBlue;
+    QLineEdit* getPixelRed;
+    QLineEdit* getPixelGreen;
+    QLineEdit* getPixelBlue;
+    QLineEdit* setPixelRed;
+    QLineEdit* setPixelGreen;
+    QLineEdit* setPixelBlue;
+    QLineEdit* setRedChannel;
+    QLineEdit* setGreenChannel;
+    QLineEdit* setBlueChannel;
 
     QPushButton* openImage;
     QPushButton* saveImage;
-    QPushButton* ShowChangeChannelBox;
-    QPushButton* changeColourChannelButton;
+    QPushButton* showChangePixelColourBox;
+    QPushButton* changePixelColourButton;
     QPushButton* revertImageButton;
+    QPushButton* showRedChannelChangeBox;
+    QPushButton* changeRedChannelButton;
+    QPushButton* showGreenChannelChangeBox;
+    QPushButton* changeGreenChannelButton;
+    QPushButton* showBlueChannelChangeBox;
+    QPushButton* changeBlueChannelButton;
+    QPushButton* informationButton;
 
     QLabel* header;
     QLabel* imageViewer;
-    QLabel* getColourChannelLabel;
-    QLabel* setColourChannelLabel;
+    QLabel* swapPixelColourLabel;
 
     QScrollArea* imageScroller;
 
     QFrame* decorativeLine1;
     QFrame* decorativeLine2;
+    QFrame* decorativeLine3;
 
     QComboBox* colourModelComboBox;
 

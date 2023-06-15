@@ -5,7 +5,7 @@
 #include "icolourmodel.h"
 #include "colorconversion.h"
 
-class ColourModel_RGB /*: public IColourModel*/
+class ColourModel_RGB
 {
 public:
     ColourModel_RGB();
