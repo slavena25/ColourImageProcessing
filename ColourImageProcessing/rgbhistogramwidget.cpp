@@ -74,7 +74,7 @@ RGBHistogramWidget::~RGBHistogramWidget(){
 }
 
 //set rgb histogram
-void RGBHistogramWidget::setImageRGB(const QImage &image)
+void RGBHistogramWidget::setImageRGB(QImage &image)
 {
     frst_Values.fill(0);
     scnd_Values.fill(0);
@@ -162,8 +162,8 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             int newBlue = abs(rgb->getBlue());
             QRgb &model = line[col];
             model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
-//            QColor newCmyColour(newRed, newGreen, newBlue);
-//            image.setPixelColor(col, row, newCmyColour);
+            //QColor newCmyColour(newRed, newGreen, newBlue);
+            //image.setPixelColor(col, row, newCmyColour);
 
 
             //get cmy values
@@ -197,7 +197,7 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     return image;
 }
 
-void RGBHistogramWidget::setImageCMYK(const QImage &image)
+QImage RGBHistogramWidget::setImageCMYK(QImage &image)
 {
     frst_Values.fill(0);
     scnd_Values.fill(0);
@@ -220,6 +220,7 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
     blackValues.fill(0);
 
     for (int row = 0; row < image.height(); row++) {
+        QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); col++) {
             QRgb pixel = image.pixel(col, row);
             double red = qRed(pixel);
@@ -228,7 +229,14 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
 
             cmyk = new ColourModel_CMYK(_colorConversion->RGBtoCMYK(new ColourModel_RGB(red,green,blue)));
             //used for the change of the pixels in the picture
-            //rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
+            rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
+            int newRed = abs(rgb->getRed());
+            int newGreen = abs(rgb->getGreen());
+            int newBlue = abs(rgb->getBlue());
+            QRgb &model = line[col];
+            model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            //QColor newCmyColour(newRed, newGreen, newBlue);
+            //image.setPixelColor(col, row, newCmyColour);
 
             double cyan = abs(cmyk->getCyan());
             double magenta = abs(cmyk->getMagenta());
@@ -260,9 +268,10 @@ void RGBHistogramWidget::setImageCMYK(const QImage &image)
     axisXMax = 100;
 
     setChart();
+    return image;
 }
 
-void RGBHistogramWidget::setImageHSI(const QImage &image)
+QImage RGBHistogramWidget::setImageHSI(QImage &image)
 {
     frst_Values.fill(0);
     scnd_Values.fill(0);
@@ -283,10 +292,8 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
     intensityValues.fill(0);
 
     for (int row = 0; row < image.height(); row++) {
+        QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); col++) {
-//            if(row == 473 && col == 1041){
-//                qDebug() << "Here";
-//            }
             QRgb pixel = image.pixel(col, row);
             int red = qRed(pixel);
             int green = qGreen(pixel);
@@ -294,6 +301,13 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
 
             hsi = new ColourModel_HSI(_colorConversion->RGBtoHSI(new ColourModel_RGB(red,green,blue)));
             rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
+            int newRed = abs(rgb->getRed());
+            int newGreen = abs(rgb->getGreen());
+            int newBlue = abs(rgb->getBlue());
+            QRgb &model = line[col];
+            model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            //QColor newCmyColour(newRed, newGreen, newBlue);
+            //image.setPixelColor(col, row, newCmyColour);
 
             double hue = hsi->getHue();
             double saturation = hsi->getSaturation();
@@ -321,6 +335,7 @@ void RGBHistogramWidget::setImageHSI(const QImage &image)
     axisXMax = 255;
 
     setChart();
+    return image;
 }
 
 void RGBHistogramWidget::setChart(){

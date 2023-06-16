@@ -135,41 +135,23 @@ ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
     int s = (int)(hsi->Saturation);
     int i = (int)(hsi->Intensity);
 
-    if(h == 0)
+    if((h >= 0) && (h <= 120))
     {
-        r = (int) (i + (2 * i * s));
-        g = (int) (i - ( i + s));
-        b = (int) (i - ( i * s));
+        r = (int) ((1 + ((s * cos(h)) / cos(60-h))) / 3);
+        b = (int) ((1 - s) / 3);
+        g = (int) (1 - (r + b));
     }
-    else if((h > 0) && (h < 120))
+    else if ((h >= 120) && (h <= 240))
     {
-        r = (int) (i + (i * s) * cos(h) / cos(60-h));
-        g = (int) (i + (i * s) * (1 - cos(h) / cos(60-h)));
-        b = (int) (i - (i * s));
+        r = (int) ((1 - s) / 3);
+        g = (int) ((1 + ((s * cos(h)) / cos(60 - h))) / 3);
+        b = (int) (1 - (r + g));
     }
-    else if(h == 120)
+    else if ((h >= 240) && (h <= 360))
     {
-        r = (int) (i - (i * s));
-        g = (int) (i + (2 * i * s));
-        b = (int) (i - (i * s));
-    }
-    else if ((h > 120) && (h < 240))
-    {
-        r = (int) (i - (i * s));
-        g = (int) (i + (i * s) * cos(h-120) / cos(180-h));
-        b = (int) (i + (i * s) * (1 - cos(h-120) / cos(180-h)));
-    }
-    else if (h == 240)
-    {
-       r = (int) (i - (i * s));
-       g = (int) (i - (i * s));
-       b = (int) (i + (2 * i * s));
-    }
-    else if ((h > 240) && (h < 360))
-    {
-       r = (int) (i + (i * s) * (1 - cos(h-240) / cos(300-h)));
-       g = (int) (i - (i * s));
-       b = (int) (i + (i * s) * cos(h-240) / cos(300-h));
+       g = (int) ((1 -  s) / 3);
+       b = (int) ((1 + ((s * cos(h)) / cos(60 - h))) / 3);
+       r = (int) (1 - (g + b));
     }
 
     return ColourModel_RGB(r, g, b);
