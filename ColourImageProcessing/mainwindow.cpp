@@ -496,13 +496,13 @@ void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
     QImage image(fileName);
     QString colourModel = colourModelComboBox->currentText();
     if (colourModel == "RGB") {
-        RGB_histogram->setImageRGB(image);
+        imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageRGB(image)));
     } else if (colourModel == "CMY") {
 //        RGB_histogram->setImageCMY(image);
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMY(image)));
     } else if (colourModel == "CMYK") {
-        RGB_histogram->setImageCMYK(image);
+        imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMYK(image)));
     } else if (colourModel == "HSI") {
-        RGB_histogram->setImageHSI(image);
+        imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageHSI(image)));
     }
 }

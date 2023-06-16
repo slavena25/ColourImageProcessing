@@ -16,9 +16,17 @@ double ColorConversion::MinVal(double a, double b)
 
 ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb->Red / 255;
-    double doubleG = (double)rgb->Green / 255;
-    double doubleB = (double)rgb->Blue / 255;
+    int r = (int)rgb->Red;
+    int g = (int)rgb->Green;
+    int b = (int)rgb->Blue;
+
+    double doubleR = (double)(0);
+    double doubleG = (double)(0);
+    double doubleB = (double)(0);
+
+    doubleR = (double)(r / 255);
+    doubleG = (double)(g / 255);
+    doubleB = (double)(b / 255);
 
     double c = 0;
     double m = 0;
@@ -38,9 +46,17 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 
 ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb->Red / 255;
-    double doubleG = (double)rgb->Green / 255;
-    double doubleB = (double)rgb->Blue / 255;
+    int r = (int)rgb->Red;
+    int g = (int)rgb->Green;
+    int b = (int)rgb->Blue;
+
+    double doubleR = (double)(0);
+    double doubleG = (double)(0);
+    double doubleB = (double)(0);
+
+    doubleR = (double)(r / 255);
+    doubleG = (double)(g / 255);
+    doubleB = (double)(b / 255);
 
     double c = 1 - doubleR;
     double m = 1 - doubleG;
@@ -109,18 +125,35 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 
 ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
-    int r = (int)(255 * (cmy->Cyan - 1));
-    int g = (int)(255 * (cmy->Magenta - 1));
-    int b = (int)(255 * (cmy->Yellow - 1));
+    double r = (double)(0);
+    double g = (double)(0);
+    double b = (double)(0);
+
+    double c = (double)(cmy->Cyan);
+    double m = (double)(cmy->Magenta);
+    double y = (double)(cmy->Yellow);
+
+    r = (double)(255 * (1 - c));
+    g = (double)(255 * (1 - m));
+    b = (double)(255 * (1 - y));
 
     return ColourModel_RGB(r, g, b);
 }
 
 ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
-    int r = (int)(255 * (1 - cmyk->Cyan) * (1 - cmyk->Black));
-    int g = (int)(255 * (1 - cmyk->Magenta) * (1 - cmyk->Black));
-    int b = (int)(255 * (1 - cmyk->Yellow) * (1 - cmyk->Black));
+    double r = (double)(0);
+    double g = (double)(0);
+    double b = (double)(0);
+
+    double c = (double)(cmyk->Cyan);
+    double m = (double)(cmyk->Magenta);
+    double y = (double)(cmyk->Yellow);
+    double k = (double)(cmyk->Black);
+
+    r = (double)(255 * (1 - c) * (1 - k));
+    g = (double)(255 * (1 - m) * (1 - k));
+    b = (double)(255 * (1 - y) * (1 - k));
 
     return ColourModel_RGB(r, g, b);
 }

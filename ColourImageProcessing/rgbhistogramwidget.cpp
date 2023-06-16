@@ -74,7 +74,7 @@ RGBHistogramWidget::~RGBHistogramWidget(){
 }
 
 //set rgb histogram
-void RGBHistogramWidget::setImageRGB(QImage &image)
+QImage RGBHistogramWidget::setImageRGB(QImage &image)
 {
     frst_Values.fill(0);
     scnd_Values.fill(0);
@@ -100,6 +100,9 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
             int green = qGreen(pixel);
             int blue = qBlue(pixel);
 
+            QColor newCmyColour(red, green, blue);
+            image.setPixelColor(col, row, newCmyColour);
+
             ++redValues[red];
             ++greenValue[green];
             ++blueValue[blue];
@@ -122,6 +125,7 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
     axisXMax = 255;
 
     setChart();
+    return image;
 }
 
 //set cmy histogram
@@ -160,10 +164,10 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             int newRed = abs(rgb->getRed());
             int newGreen = abs(rgb->getGreen());
             int newBlue = abs(rgb->getBlue());
-            QRgb &model = line[col];
-            model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
-            //QColor newCmyColour(newRed, newGreen, newBlue);
-            //image.setPixelColor(col, row, newCmyColour);
+            //QRgb &model = line[col];
+            //model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
 
 
             //get cmy values
@@ -233,10 +237,10 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
             int newRed = abs(rgb->getRed());
             int newGreen = abs(rgb->getGreen());
             int newBlue = abs(rgb->getBlue());
-            QRgb &model = line[col];
-            model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
-            //QColor newCmyColour(newRed, newGreen, newBlue);
-            //image.setPixelColor(col, row, newCmyColour);
+            //QRgb &model = line[col];
+            //model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
 
             double cyan = abs(cmyk->getCyan());
             double magenta = abs(cmyk->getMagenta());
@@ -304,10 +308,10 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             int newRed = abs(rgb->getRed());
             int newGreen = abs(rgb->getGreen());
             int newBlue = abs(rgb->getBlue());
-            QRgb &model = line[col];
-            model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
-            //QColor newCmyColour(newRed, newGreen, newBlue);
-            //image.setPixelColor(col, row, newCmyColour);
+            //QRgb &model = line[col];
+            //model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
 
             double hue = hsi->getHue();
             double saturation = hsi->getSaturation();
