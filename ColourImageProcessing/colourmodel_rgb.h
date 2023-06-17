@@ -25,9 +25,9 @@ public:
     void setBlue(int b);
 
 protected:
-    int Red;
-    int Green;
-    int Blue;
+    double Red;
+    double Green;
+    double Blue;
 
     friend class ColorConversion;
 };

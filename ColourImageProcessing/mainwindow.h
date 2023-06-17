@@ -47,8 +47,9 @@ private slots:
     void on_ChangeBlueChannelButton_clicked();
     void on_ShowSwapPixelColourBox_clicked();
     void on_ChangePixelColourButton_clicked();
-    void on_ShortcutHideColourChangingCannel_clicked();
+    void on_HideOpenOptions_clicked();
     void on_RevertImageButton_clicked();
+    void on_Information_clicked();
     void colourModelComboBox_CurrentIndexChanged(int index);
 
 private:

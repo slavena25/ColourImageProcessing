@@ -83,7 +83,13 @@ void MainWindow::initWidget(){
 
     //------------------QShortcut that will hide the colour channel changing section------------------
 
-    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_H), this, SLOT(on_ShortcutHideColourChangingCannel_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_R), this, SLOT(on_ShowRedChannelChangeBox_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_G), this, SLOT(on_ShowGreenChannelChangeBox_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_B), this, SLOT(on_ShowBlueChannelChangeBox_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_P), this, SLOT(on_ShowSwapPixelColourBox_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_H), this, SLOT(on_HideOpenOptions_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_O), this, SLOT(on_RevertImageButton_clicked()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_I), this, SLOT(on_Information_clicked()));
 
     //------------------Change Colour Channel------------------
 
@@ -263,6 +269,7 @@ void MainWindow::connectSignals(){
     QObject::connect(showChangePixelColourBox, SIGNAL(clicked()), this, SLOT(on_ShowSwapPixelColourBox_clicked()));
     QObject::connect(changePixelColourButton, SIGNAL(clicked()), this, SLOT(on_ChangePixelColourButton_clicked()));
     QObject::connect(revertImageButton, SIGNAL(clicked()), this, SLOT(on_RevertImageButton_clicked()));
+    QObject::connect(informationButton, SIGNAL(clicked()), this, SLOT(on_Information_clicked()));
     QObject::connect(colourModelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(colourModelComboBox_CurrentIndexChanged(int)));
 }
 
@@ -480,7 +487,7 @@ void MainWindow::on_ChangePixelColourButton_clicked(){
     imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
 }
 
-void MainWindow::on_ShortcutHideColourChangingCannel_clicked(){
+void MainWindow::on_HideOpenOptions_clicked(){
     setVisiblePixelColourSwapLayout(false);
     setVisibleRedChannelChangeLayout(false);
     setVisibleGreenChannelChangeLayout(false);
@@ -492,6 +499,20 @@ void MainWindow::on_RevertImageButton_clicked(){
     imageViewer->setPixmap(QPixmap::fromImage(_originalImage));
 }
 
+void MainWindow::on_Information_clicked(){
+    QMessageBox shortcutInfo;
+    shortcutInfo.setText("Information");
+    shortcutInfo.setInformativeText("CTRL+R: Change Red Channel\n"
+                                    "CTRL+G: Change Green Channel\n"
+                                    "CTRL+B: Change Blue Channel\n"
+                                    "CTRL+P: Swap Pixels\n"
+                                    "CTRL+H: Hide an Open Colour Option Box\n"
+                                    "CTRL+O: Revert Image to Original\n"
+                                    "CTRL+I: Open Help Box\n");
+    shortcutInfo.setStandardButtons(QMessageBox::Ok);
+    shortcutInfo.setDefaultButton(QMessageBox::Ok);
+    int ret = shortcutInfo.exec();
+}
 void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
     QImage image(fileName);
     QString colourModel = colourModelComboBox->currentText();
@@ -501,6 +522,7 @@ void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
 //        RGB_histogram->setImageCMY(image);
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMY(image)));
     } else if (colourModel == "CMYK") {
+//        RGB_histogram->setImageCMYK(image);
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMYK(image)));
     } else if (colourModel == "HSI") {
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageHSI(image)));
