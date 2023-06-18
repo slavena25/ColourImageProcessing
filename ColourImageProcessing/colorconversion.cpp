@@ -16,22 +16,13 @@ double ColorConversion::MinVal(double a, double b)
 
 ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
+    double doubleR = rgb->Red / 255;
+    double doubleG = rgb->Green / 255;
+    double doubleB = rgb->Blue / 255;
 
-    int r = (int)rgb->Red;
-    int g = (int)rgb->Green;
-    int b = (int)rgb->Blue;
-
-    double doubleR = (double)(0);
-    double doubleG = (double)(0);
-    double doubleB = (double)(0);
-
-    doubleR = (double)(r / 255);
-    doubleG = (double)(g / 255);
-    doubleB = (double)(b / 255);
-
-    int c = 0;
-    int m = 0;
-    int y = 0;
+    double c = 0;
+    double m = 0;
+    double y = 0;
 
     double k = (1 - MaxVal(MaxVal(doubleR, doubleG), doubleB));
 
@@ -43,22 +34,13 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 
     k = qRound(k * 100);
     return ColourModel_CMYK(c, m, y , k );
-
 }
 
 ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
-    int r = (int)rgb->Red;
-    int g = (int)rgb->Green;
-    int b = (int)rgb->Blue;
-
-    double doubleR = (double)(0);
-    double doubleG = (double)(0);
-    double doubleB = (double)(0);
-
-    doubleR = (double)(r / 255);
-    doubleG = (double)(g / 255);
-    doubleB = (double)(b / 255);
+    double doubleR = rgb->Red / 255;
+    double doubleG = rgb->Green / 255;
+    double doubleB = rgb->Blue / 255;
 
     int c = qRound((1 - doubleR) * 100);
     int m = qRound((1 - doubleG) * 100);
@@ -70,9 +52,9 @@ ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 
 ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 {
-    int _red = (double)rgb->Red;
-    int _green = (double)rgb->Green;
-    int _blue = (double)rgb->Blue;
+    double _red = rgb->Red;
+    double _green = rgb->Green;
+    double _blue = rgb->Blue;
 
     double h;
     double s;
@@ -91,7 +73,7 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 
     //get the saturation
     double min = MinVal(_red, MinVal(_green, _blue));
-    s = qRound(1 - 3*(min / _RGB));
+    s = 1 - 3*(min / _RGB);
 
     if(s < 0.00001)
     {
@@ -104,7 +86,9 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 
     if(s != 0)
     {
-        h = 0.5 * ((_red - _green) + (_red - _blue)) / sqrt(((_red - _green) * (_red - _green) + (_red - _blue) * (_green - _blue)));
+        double a = _red - _green;
+        double b = _red - _blue;
+        h = 0.5 * (a + b) / sqrt((qPow(a, 2) + qPow(b, 2)));
         h = acos(h);
 
         if(_blue > _green)
@@ -123,37 +107,27 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 
 ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
+    double c = cmy->Cyan;
+    double m = cmy->Magenta;
+    double y = cmy->Yellow;
 
-    int r = (int)(0);
-    int g = (int)(0);
-    int b = (int)(0);
-
-    double c = (double)(cmy->Cyan);
-    double m = (double)(cmy->Magenta);
-    double y = (double)(cmy->Yellow);
-
-
-    r = qRound((255 * (100 - c)) / 100);
-    g = qRound((255 * (100 - m)) / 100);
-    b = qRound((255 * (100 - y)) / 100);
+    double r = qRound((255 * (100 - c)) / 100);
+    double g = qRound((255 * (100 - m)) / 100);
+    double b = qRound((255 * (100 - y)) / 100);
 
     return ColourModel_RGB(r, g, b);
 }
 
 ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
-    double r = (double)(0);
-    double g = (double)(0);
-    double b = (double)(0);
+    double c = cmyk->Cyan / 100;
+    double m = cmyk->Magenta / 100;
+    double y = cmyk->Yellow / 100;
+    double k = cmyk->Black / 100;
 
-    double c = (double)(cmyk->Cyan);
-    double m = (double)(cmyk->Magenta);
-    double y = (double)(cmyk->Yellow);
-    double k = (double)(cmyk->Black);
-
-    r = qRound((255 * (100 - c) * (100 - k)) / 100);
-    g = qRound((255 * (100 - m) * (100 - k)) / 100);
-    b = qRound((255 * (100 - y) * (100 - k)) / 100);
+    double r = qRound((255 * (1 - c) * (1 - k)));
+    double g = qRound((255 * (1 - m) * (1 - k)));
+    double b = qRound((255 * (1 - y) * (1 - k)));
 
     return ColourModel_RGB(r, g, b);
 }

@@ -291,6 +291,9 @@ void MainWindow::on_Open_Clicked(){
     openPath->setToolTip(fileName);
 
     QImage image(fileName);
+    qDebug() << image.format();
+    image.convertToFormat(QImage::Format_RGB32);
+    qDebug() << image.format();
     if(image.isNull()){
         QMessageBox::warning(this, "Error", "Failed to open image.");
     }else{
