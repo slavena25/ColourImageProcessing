@@ -94,9 +94,9 @@ QImage RGBHistogramWidget::setImageRGB(QImage &image)
     greenValue.fill(0);
     blueValue.fill(0);
 
-    for (int row = 0; row < image.height(); row++) {
+    for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
-        for (int col = 0; col < image.width(); col++) {
+        for (int col = 0; col < image.width(); ++col) {
             QRgb &model = line[col];
             int red = qRed(model);
             int green = qGreen(model);
@@ -150,9 +150,9 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     yellowValues.fill(0);
     cyanValues.fill(0);
 
-    for (int row = 0; row < image.height(); row++) {
+    for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
-        for (int col = 0; col < image.width(); col++) {
+        for (int col = 0; col < image.width(); ++col) {
 //            if(row == 450 && col == 450){
 //                qDebug() << "catch";
 //            }
@@ -228,9 +228,9 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
     cyanValues.fill(0);
     blackValues.fill(0);
 
-    for (int row = 0; row < image.height(); row++) {
+    for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
-        for (int col = 0; col < image.width(); col++) {
+        for (int col = 0; col < image.width(); ++col) {
             if(row == 450 && col == 450){
                 qDebug() << "catch";
             }
@@ -305,13 +305,13 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
     saturationValues.fill(0);
     intensityValues.fill(0);
 
-    for (int row = 0; row < image.height(); row++) {
+    for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
-        for (int col = 0; col < image.width(); col++) {
-            QRgb pixel = image.pixel(col, row);
-            int red = qRed(pixel);
-            int green = qGreen(pixel);
-            int blue = qBlue(pixel);
+        for (int col = 0; col < image.width(); ++col) {
+            QRgb &model = line[col];
+            double red = qRed(model);
+            double green = qGreen(model);
+            double blue = qBlue(model);
 
             hsi = new ColourModel_HSI(_colorConversion->RGBtoHSI(new ColourModel_RGB(red,green,blue)));
 
@@ -323,14 +323,14 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             ++saturationValues[saturation];
             ++intensityValues[intensity];
 
-            //            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
-            //            int newRed = abs(rgb->getRed());
-            //            int newGreen = abs(rgb->getGreen());
-            //            int newBlue = abs(rgb->getBlue());
-            //            //QRgb &model = line[col];
-            //            //model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
-            //            QColor newCmyColour(newRed, newGreen, newBlue);
-            //            image.setPixelColor(col, row, newCmyColour);
+            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
+            int newRed = abs(rgb->getRed());
+            int newGreen = abs(rgb->getGreen());
+            int newBlue = abs(rgb->getBlue());
+            //QRgb &model = line[col];
+            //model = qRgba(qRed(newRed), qGreen(newGreen), qBlue(newBlue), qAlpha(model));
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
         }
     }
 
