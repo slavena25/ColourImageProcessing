@@ -82,7 +82,7 @@ RGBHistogramWidget::~RGBHistogramWidget(){
 }
 
 //set rgb histogram
-QImage RGBHistogramWidget::setImageRGB(QImage &image)
+void RGBHistogramWidget::setImageRGB(QImage &image)
 {
     //clear the chart, before updating it
     clearColourSets();
@@ -127,7 +127,6 @@ QImage RGBHistogramWidget::setImageRGB(QImage &image)
     fourthColorName = "";
 
     setChart();
-    return image;
 }
 
 //set cmy histogram
@@ -215,9 +214,6 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
     for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); ++col) {
-            if(row == 450 && col == 450){
-                qDebug() << "catch";
-            }
             QRgb &model = line[col];
             double red = qRed(model);
             double green = qGreen(model);

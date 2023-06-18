@@ -61,7 +61,8 @@ private:
     void setVisibleRedChannelChangeLayout(bool visible);
     void setVisibleGreenChannelChangeLayout(bool visible);
     void setVisibleBlueChannelChangeLayout(bool visible);
-    QImage returnModifiedImage();
+    void saveTempImage();
+    void deleteTempImage();
 
     //UI Widget initialization
     QWidget* ui_centralWidget;
@@ -116,6 +117,7 @@ private:
     QComboBox* colourModelComboBox;
 
     QString fileName;
+    QString tempPath;
 
     RGBHistogramWidget* RGB_histogram; //HistogramWidget
 

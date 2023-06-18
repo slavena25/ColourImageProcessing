@@ -25,7 +25,7 @@ public:
     ~RGBHistogramWidget();
     void HistogramWidgetInit();
 
-    QImage setImageRGB(QImage &image);
+    void setImageRGB(QImage &image);
     QImage setImageCMY(QImage &image);
     QImage setImageCMYK(QImage &image);
     QImage setImageHSI(QImage &image);

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    deleteTempImage();
     delete ui;
 }
 
@@ -290,31 +291,18 @@ void MainWindow::on_Open_Clicked(){
     openPath->setCursorPosition(0);
     openPath->setToolTip(fileName);
 
+    //convert image to RGB32 format
     QImage image(fileName);
-    qDebug() << image.format();
     image.convertToFormat(QImage::Format_RGB32);
-    qDebug() << image.format();
+
+    //get the selected colourmodel and make a copy of the original image
     if(image.isNull()){
         QMessageBox::warning(this, "Error", "Failed to open image.");
     }else{
-        //display the image
-        imageViewer->setPixmap(QPixmap::fromImage(image));
-        imageViewer->resize(image.size());
-
-        //display the histogram
-        //move this if/else to the CurrentIndexChanged function
-        //fix RGBHistogramWidget and make it work with all colour models?
-        QString colourModel = colourModelComboBox->currentText();
-                        if (colourModel == "RGB") {
-                            RGB_histogram->setImageRGB(image);
-                        } else if (colourModel == "CMY") {
-                            RGB_histogram->setImageCMY(image);
-                        } else if (colourModel == "CMYK") {
-                            RGB_histogram->setImageCMYK(image);
-                        } else if (colourModel == "HSI") {
-                            RGB_histogram->setImageHSI(image);
-                        }
-
+        //save the image to a temp file
+        saveTempImage();
+        //display the image and histogram
+        colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
     }
 }
 
@@ -333,14 +321,22 @@ void MainWindow::on_Save_Clicked(){
 
 }
 
-QImage MainWindow::returnModifiedImage(){
-    QImage _changedImage(fileName);
+void MainWindow::saveTempImage(){
+    QImage _originalImage(fileName);
     QFileInfo fileInfo(fileName);
-    QString path = "tempFiles/temp." + fileInfo.suffix();
-    if(!QFile::exists(path)){
-        _changedImage.save(path);
+    tempPath = "tempFiles/temp." + fileInfo.suffix();
+    if(QFile::exists(tempPath)){
+        QFile::remove(tempPath);
     }
-    return _changedImage;
+
+    imageViewer->resize(_originalImage.size());
+    _originalImage.save(tempPath);
+}
+
+void MainWindow::deleteTempImage(){
+    if(QFile::exists(tempPath)){
+        QFile::remove(tempPath);
+    }
 }
 
 void MainWindow::setVisiblePixelColourSwapLayout(bool visible){
@@ -381,23 +377,19 @@ void MainWindow::on_ShowRedChannelChangeBox_clicked(){
 
 void MainWindow::on_ChangeRedChannelButton_clicked(){
 
-    //if QComboBox == RGB, make both images equal get current pixmap
-    //if QComboBox != RGB, then add the changes to both images
-    //have two images, one is the current pixmap that is displayed
-    //and another which, will be saved in the backend
-    //QImage _changedImage = imageViewer->pixmap().toImage(); //get current state of Image
-    QImage _changedImage(fileName);
+    QImage _changedImage(tempPath);
     int rChannelValue = setRedChannel->text().toInt(); // set red channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
-                            QRgb &rgb = line[x];
-                            rgb = qRgba(qRed(rChannelValue), qGreen(rgb), qBlue(rgb), qAlpha(rgb));
+            QRgb &rgb = line[x];
+            rgb = qRgb(qRed(rChannelValue), qGreen(rgb), qBlue(rgb));
         }
     }
 
-    imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
+    _changedImage.save(tempPath);
+    colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
 void MainWindow::on_ShowGreenChannelChangeBox_clicked(){
@@ -412,19 +404,19 @@ void MainWindow::on_ShowGreenChannelChangeBox_clicked(){
 
 void MainWindow::on_ChangeGreenChannelButton_clicked(){
 
-    QImage _changedImage = imageViewer->pixmap().toImage(); //get current state of Image
-    //QImage tempImage = returnModifiedImage();
-    int gChannelValue = setGreenChannel->text().toInt(); // set red channel value
+    QImage _changedImage(tempPath);
+    int gChannelValue = setGreenChannel->text().toInt(); // set green channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
                             QRgb &rgb = line[x];
-                            rgb = qRgba(qRed(rgb), qGreen(gChannelValue), qBlue(rgb), qAlpha(rgb));
+                            rgb = qRgb(qRed(rgb), qGreen(gChannelValue), qBlue(rgb));
         }
     }
 
-    imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
+    _changedImage.save(tempPath);
+    colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
 void MainWindow::on_ShowBlueChannelChangeBox_clicked(){
@@ -439,19 +431,19 @@ void MainWindow::on_ShowBlueChannelChangeBox_clicked(){
 
 void MainWindow::on_ChangeBlueChannelButton_clicked(){
 
-    QImage _changedImage = imageViewer->pixmap().toImage(); //get current state of Image
-    //QImage tempImage = returnModifiedImage();
-    int bChannelValue = setBlueChannel->text().toInt(); // set red channel value
+    QImage _changedImage(tempPath);
+    int bChannelValue = setBlueChannel->text().toInt(); // set blue channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
                             QRgb &rgb = line[x];
-                            rgb = qRgba(qRed(rgb), qGreen(rgb), qBlue(bChannelValue), qAlpha(rgb));
+                            rgb = qRgb(qRed(rgb), qGreen(rgb), qBlue(bChannelValue));
         }
     }
 
-    imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
+    _changedImage.save(tempPath);
+    colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
 void MainWindow::on_ShowSwapPixelColourBox_clicked(){
@@ -466,7 +458,7 @@ void MainWindow::on_ShowSwapPixelColourBox_clicked(){
 
 void MainWindow::on_ChangePixelColourButton_clicked(){
 
-    QImage _changedImage = imageViewer->pixmap().toImage();
+    QImage _currentImage = imageViewer->pixmap().toImage();
 
     int getR = getPixelRed->text().toInt();
     int getG = getPixelGreen->text().toInt();
@@ -476,18 +468,18 @@ void MainWindow::on_ChangePixelColourButton_clicked(){
     int setG = setPixelGreen->text().toInt();
     int setB = setPixelBlue->text().toInt();
 
-    for(int row = 0; row < _changedImage.height(); row++){
-        for(int col = 0; col < _changedImage.width(); col++){
-            QColor _pixelColour = _changedImage.pixelColor(col, row);
+    for(int row = 0; row < _currentImage.height(); row++){
+        for(int col = 0; col < _currentImage.width(); col++){
+            QColor _pixelColour = _currentImage.pixelColor(col, row);
             QColor _searchColour(getR, getG, getB);
             QColor _newColour(setR, setG, setB);
             if(_pixelColour == _searchColour){
-                _changedImage.setPixelColor(col, row, _newColour);
+                _currentImage.setPixelColor(col, row, _newColour);
             }
         }
     }
 
-    imageViewer->setPixmap(QPixmap::fromImage(_changedImage));
+    imageViewer->setPixmap(QPixmap::fromImage(_currentImage));
 }
 
 void MainWindow::on_HideOpenOptions_clicked(){
@@ -498,8 +490,8 @@ void MainWindow::on_HideOpenOptions_clicked(){
 }
 
 void MainWindow::on_RevertImageButton_clicked(){
-    QImage _originalImage(fileName);
-    imageViewer->setPixmap(QPixmap::fromImage(_originalImage));
+    saveTempImage();
+    colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
 void MainWindow::on_Information_clicked(){
@@ -516,16 +508,16 @@ void MainWindow::on_Information_clicked(){
     shortcutInfo.setDefaultButton(QMessageBox::Ok);
     int ret = shortcutInfo.exec();
 }
+
 void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
-    QImage image(fileName);
+    QImage image(tempPath);
     QString colourModel = colourModelComboBox->currentText();
     if (colourModel == "RGB") {
-        imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageRGB(image)));
+        imageViewer->setPixmap(QPixmap::fromImage(image));
+        RGB_histogram->setImageRGB(image);
     } else if (colourModel == "CMY") {
-//        RGB_histogram->setImageCMY(image);
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMY(image)));
     } else if (colourModel == "CMYK") {
-//        RGB_histogram->setImageCMYK(image);
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageCMYK(image)));
     } else if (colourModel == "HSI") {
         imageViewer->setPixmap(QPixmap::fromImage(RGB_histogram->setImageHSI(image)));
