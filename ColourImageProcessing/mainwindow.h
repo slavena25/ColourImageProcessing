@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QPalette>
 #include <QDebug>
+#include <QShortcut>
 
 #include "rgbhistogramwidget.h"
 #include "ui_mainwindow.h"
@@ -38,12 +39,30 @@ public:
 private slots:
     void on_Open_Clicked();
     void on_Save_Clicked();
+    void on_ShowRedChannelChangeBox_clicked();
+    void on_ChangeRedChannelButton_clicked();
+    void on_ShowGreenChannelChangeBox_clicked();
+    void on_ChangeGreenChannelButton_clicked();
+    void on_ShowBlueChannelChangeBox_clicked();
+    void on_ChangeBlueChannelButton_clicked();
+    void on_ShowSwapPixelColourBox_clicked();
+    void on_ChangePixelColourButton_clicked();
+    void on_HideOpenOptions_clicked();
+    void on_RevertImageButton_clicked();
+    void on_Information_clicked();
     void colourModelComboBox_CurrentIndexChanged(int index);
 
 private:
+
     //functions
     void initWidget();
     void connectSignals();
+    void setVisiblePixelColourSwapLayout(bool visible);
+    void setVisibleRedChannelChangeLayout(bool visible);
+    void setVisibleGreenChannelChangeLayout(bool visible);
+    void setVisibleBlueChannelChangeLayout(bool visible);
+    void saveTempImage();
+    void deleteTempImage();
 
     //UI Widget initialization
     QWidget* ui_centralWidget;
@@ -53,23 +72,52 @@ private:
     QVBoxLayout* imageViewerLayout;
     QVBoxLayout* colourModelLayout;
     QVBoxLayout* centralWidgetLayout;
+    QVBoxLayout* changePixelColourLayout;
+    QHBoxLayout* getPixelColourLayout;
+    QHBoxLayout* setPixelColourLayout;
+    QHBoxLayout* redColourChannelLayout;
+    QHBoxLayout* greenColourChannelLayout;
+    QHBoxLayout* blueColourChannelLayout;
+    QVBoxLayout* imageOptionsBarLayout;
 
     QLineEdit* openPath;
+    QLineEdit* getPixelRed;
+    QLineEdit* getPixelGreen;
+    QLineEdit* getPixelBlue;
+    QLineEdit* setPixelRed;
+    QLineEdit* setPixelGreen;
+    QLineEdit* setPixelBlue;
+    QLineEdit* setRedChannel;
+    QLineEdit* setGreenChannel;
+    QLineEdit* setBlueChannel;
 
     QPushButton* openImage;
     QPushButton* saveImage;
+    QPushButton* showChangePixelColourBox;
+    QPushButton* changePixelColourButton;
+    QPushButton* revertImageButton;
+    QPushButton* showRedChannelChangeBox;
+    QPushButton* changeRedChannelButton;
+    QPushButton* showGreenChannelChangeBox;
+    QPushButton* changeGreenChannelButton;
+    QPushButton* showBlueChannelChangeBox;
+    QPushButton* changeBlueChannelButton;
+    QPushButton* informationButton;
 
     QLabel* header;
     QLabel* imageViewer;
+    QLabel* swapPixelColourLabel;
 
     QScrollArea* imageScroller;
 
     QFrame* decorativeLine1;
     QFrame* decorativeLine2;
+    QFrame* decorativeLine3;
 
     QComboBox* colourModelComboBox;
 
     QString fileName;
+    QString tempPath;
 
     RGBHistogramWidget* RGB_histogram; //HistogramWidget
 

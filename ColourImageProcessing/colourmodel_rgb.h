@@ -5,7 +5,7 @@
 #include "icolourmodel.h"
 #include "colorconversion.h"
 
-class ColourModel_RGB /*: public IColourModel*/
+class ColourModel_RGB
 {
 public:
     ColourModel_RGB();
@@ -25,9 +25,9 @@ public:
     void setBlue(int b);
 
 protected:
-    int Red;
-    int Green;
-    int Blue;
+    double Red;
+    double Green;
+    double Blue;
 
     friend class ColorConversion;
 };

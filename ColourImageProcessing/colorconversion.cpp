@@ -16,28 +16,35 @@ double ColorConversion::MinVal(double a, double b)
 
 ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb->Red / 255;
-    double doubleG = (double)rgb->Green / 255;
-    double doubleB = (double)rgb->Blue / 255;
+    double doubleR = rgb->Red / 255;
+    double doubleG = rgb->Green / 255;
+    double doubleB = rgb->Blue / 255;
 
-    double k = 1 - MaxVal(MaxVal(doubleR, doubleG), doubleB);
-    double c = (1 - doubleR - k)/(1 - k);
-    double m = (1 - doubleG - k)/(1 - k);
-    double y = (1 - doubleB - k)/(1 - k);
+    double c = 0;
+    double m = 0;
+    double y = 0;
 
+    double k = (1 - MaxVal(MaxVal(doubleR, doubleG), doubleB));
+
+    if(k != 1){
+        c = qRound(((1 - doubleR - k)/(1 - k)) * 100);
+        m = qRound(((1 - doubleG - k)/(1 - k)) * 100);
+        y = qRound(((1 - doubleB - k)/(1 - k)) * 100);
+    }
+
+    k = qRound(k * 100);
     return ColourModel_CMYK(c, m, y , k );
-
 }
 
 ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb->Red / 255;
-    double doubleG = (double)rgb->Green / 255;
-    double doubleB = (double)rgb->Blue / 255;
+    double doubleR = rgb->Red / 255;
+    double doubleG = rgb->Green / 255;
+    double doubleB = rgb->Blue / 255;
 
-    double c = 1 - doubleR;
-    double m = 1 - doubleG;
-    double y = 1 - doubleB;
+    int c = qRound((1 - doubleR) * 100);
+    int m = qRound((1 - doubleG) * 100);
+    int y = qRound((1 - doubleB) * 100);
 
     return ColourModel_CMY(c, m, y);
 
@@ -45,104 +52,113 @@ ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 
 ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 {
-    double doubleR = (double)rgb->Red;
-    double doubleG = (double)rgb->Green;
-    double doubleB = (double)rgb->Blue;
+    double _red = rgb->Red;
+    double _green = rgb->Green;
+    double _blue = rgb->Blue;
 
     double h;
     double s;
     double i;
 
-    double doubleRGB = (doubleR + doubleG + doubleB);
-
-    i = doubleRGB / 3;
-
-    if(doubleRGB == 765)
-    {
-        s = 0;
+    if(_red == 0 && _green == 0 && _blue == 0){
         h = 0;
+        s = 0;
+        i = 0;
+        return ColourModel_HSI(h, s, i);
     }
 
-    if(i > 0)
-    {
-        s = 1 - MinVal(doubleR, MinVal(doubleG, doubleB));
-    }
-    else if(i == 0)
+    //get the intensity
+    int _RGB = (_red + _green + _blue);
+    i = _RGB / 3;
+
+    //get the saturation
+    double min = MinVal(_red, MinVal(_green, _blue));
+    s = 1 - 3*(min / _RGB);
+
+    if(s < 0.00001)
     {
         s = 0;
     }
-
-    if(doubleG >= doubleB)
+    else if(s > 0.99999)
     {
-        h = 360 - acos(doubleR - (doubleG / 2) - (doubleB / 2) / sqrt((doubleR * doubleR) + (doubleG * doubleG) + (doubleB*doubleB) - (doubleR * doubleG) - (doubleR * doubleB) - (doubleG * doubleB)));
+        s = 1;
     }
+
+    if(s != 0)
+    {
+        double a = _red - _green;
+        double b = _red - _blue;
+        h = 0.5 * (a + b) / sqrt((qPow(a, 2) + qPow(b, 2)));
+        h = acos(h);
+
+        if(_blue > _green)
+        {
+            h = ((360 * 3.14159265) / 180.0) - h;
+        }
+    }
+
+    h = qRound((h * 180) / 3.14159265);
+    s = qRound(s*100);
+    i = i;
+
 
     return ColourModel_HSI(h, s, i);
 }
 
 ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
-    int r = (int)(255 * (cmy->Cyan - 1));
-    int g = (int)(255 * (cmy->Magenta - 1));
-    int b = (int)(255 * (cmy->Yellow - 1));
+    double c = cmy->Cyan;
+    double m = cmy->Magenta;
+    double y = cmy->Yellow;
+
+    double r = qRound((255 * (100 - c)) / 100);
+    double g = qRound((255 * (100 - m)) / 100);
+    double b = qRound((255 * (100 - y)) / 100);
 
     return ColourModel_RGB(r, g, b);
 }
 
 ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
-    int r = (int)(255 * (1 - cmyk->Cyan) * (1 - cmyk->Black));
-    int g = (int)(255 * (1 - cmyk->Magenta) * (1 - cmyk->Black));
-    int b = (int)(255 * (1 - cmyk->Yellow) * (1 - cmyk->Black));
+    double c = cmyk->Cyan / 100;
+    double m = cmyk->Magenta / 100;
+    double y = cmyk->Yellow / 100;
+    double k = cmyk->Black / 100;
+
+    double r = qRound((255 * (1 - c) * (1 - k)));
+    double g = qRound((255 * (1 - m) * (1 - k)));
+    double b = qRound((255 * (1 - y) * (1 - k)));
 
     return ColourModel_RGB(r, g, b);
 }
 
 ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
 {
-    int r = (int)(0);
-    int g = (int)(0);
-    int b = (int)(0);
+    double r = 0;
+    double g = 0;
+    double b = 0;
 
-    int h = (int)(hsi->Hue);
-    int s = (int)(hsi->Saturation);
-    int i = (int)(hsi->Intensity);
+    double h = hsi->Hue;
+    double s = hsi->Saturation;
+    double i = hsi->Intensity;
 
-    if(h == 0)
+    if((h >= 0) && (h <= 120))
     {
-        r = (int) (i + (2 * i * s));
-        g = (int) (i - ( i + s));
-        b = (int) (i - ( i * s));
+        r = qRound(((1 + ((s * cos(h)) / cos(60-h))) / 3));
+        b = qRound(((1 - s) / 3));
+        g = qRound((1 - (r + b)));
     }
-    else if((h > 0) && (h < 120))
+    else if ((h >= 120) && (h <= 240))
     {
-        r = (int) (i + (i * s) * cos(h) / cos(60-h));
-        g = (int) (i + (i * s) * (1 - cos(h) / cos(60-h)));
-        b = (int) (i - (i * s));
+        r = qRound(((1 - s) / 3));
+        g = qRound(((1 + ((s * cos(h)) / cos(60 - h))) / 3));
+        b = qRound((1 - (r + g)));
     }
-    else if(h == 120)
+    else if ((h >= 240) && (h <= 360))
     {
-        r = (int) (i - (i * s));
-        g = (int) (i + (2 * i * s));
-        b = (int) (i - (i * s));
-    }
-    else if ((h > 120) && (h < 240))
-    {
-        r = (int) (i - (i * s));
-        g = (int) (i + (i * s) * cos(h-120) / cos(180-h));
-        b = (int) (i + (i * s) * (1 - cos(h-120) / cos(180-h)));
-    }
-    else if (h == 240)
-    {
-       r = (int) (i - (i * s));
-       g = (int) (i - (i * s));
-       b = (int) (i + (2 * i * s));
-    }
-    else if ((h > 240) && (h < 360))
-    {
-       r = (int) (i + (i * s) * (1 - cos(h-240) / cos(300-h)));
-       g = (int) (i - (i * s));
-       b = (int) (i + (i * s) * cos(h-240) / cos(300-h));
+       g = qRound(((1 -  s) / 3));
+       b = qRound(((1 + ((s * cos(h)) / cos(60 - h))) / 3));
+       r = qRound((1 - (g + b)));
     }
 
     return ColourModel_RGB(r, g, b);
