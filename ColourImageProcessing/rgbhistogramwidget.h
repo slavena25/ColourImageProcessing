@@ -24,14 +24,19 @@ public:
     RGBHistogramWidget(QWidget *parent = nullptr);
     ~RGBHistogramWidget();
     void HistogramWidgetInit();
+
     QImage setImageRGB(QImage &image);
     QImage setImageCMY(QImage &image);
     QImage setImageCMYK(QImage &image);
     QImage setImageHSI(QImage &image);
-    void setChart();
-    void setChartCMYK();
+
     void clearColourSets();
     void setColourSets();
+    void setHistogramChartXYAxis(int maxValAxisX, int maxValAxisY);
+
+    void setChart();
+    void setChartCMYK();
+
 
 private:
     //-------------Chart-------------
@@ -63,7 +68,6 @@ private:
 
     //QChart
     QChart *histogramChart;
-    int axisXMax;
 
     //Title of the chart
     const QString chartTitle = "Histogram Chart";

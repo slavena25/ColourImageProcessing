@@ -99,18 +99,6 @@ QImage RGBHistogramWidget::setImageRGB(QImage &image)
     thrd_Values.fill(0);
     fourth_Values.fill(0);
 
-    QVector<double> redValues;
-    QVector<double> greenValue;
-    QVector<double> blueValue;
-
-    redValues.resize(256); //red
-    greenValue.resize(256); //green
-    blueValue.resize(256); //blue
-
-    redValues.fill(0);
-    greenValue.fill(0);
-    blueValue.fill(0);
-
     for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); ++col) {
@@ -122,15 +110,11 @@ QImage RGBHistogramWidget::setImageRGB(QImage &image)
             QColor newCmyColour(red, green, blue);
             image.setPixelColor(col, row, newCmyColour);
 
-            ++redValues[red];
-            ++greenValue[green];
-            ++blueValue[blue];
+            ++frst_Values[red];
+            ++scnd_Values[green];
+            ++thrd_Values[blue];
         }
     }
-
-    frst_Values = redValues;
-    scnd_Values = greenValue;
-    thrd_Values = blueValue;
 
     frstColor = Qt::red;
     scndColor = Qt::green;
@@ -141,8 +125,6 @@ QImage RGBHistogramWidget::setImageRGB(QImage &image)
     scndColorName = "Blue";
     thrdColorName = "Green";
     fourthColorName = "";
-
-    axisXMax = 255;
 
     setChart();
     return image;
@@ -166,27 +148,9 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     thrd_Values.fill(0);
     fourth_Values.fill(0);
 
-    QVector<double> magentaValues;
-    QVector<double> yellowValues;
-    QVector<double> cyanValues;
-
-    magentaValues.resize(101);
-    yellowValues.resize(101);
-    cyanValues.resize(101);
-
-    magentaValues.fill(0);
-    yellowValues.fill(0);
-    cyanValues.fill(0);
-
     for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); ++col) {
-            if(row == 450 && col == 300){
-                qDebug() << "catch";
-            }
-            if(row == 450 && col == 450){
-                qDebug() << "catch";
-            }
             QRgb &model = line[col];
             double red = qRed(model);
             double green = qGreen(model);
@@ -201,9 +165,9 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             double yellow = abs(cmy->getYellow());
 
             //add cmy values to vector, multiplied by 100, because cmy values <= 1
-            ++magentaValues[magenta];
-            ++yellowValues[yellow];
-            ++cyanValues[cyan];
+            ++frst_Values[magenta];
+            ++scnd_Values[yellow];
+            ++thrd_Values[cyan];
 
             //used for the change of the pixels in the picture
             rgb = new ColourModel_RGB(_colorConversion->CMYtoRGB(cmy));
@@ -216,10 +180,6 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
         }
     }
 
-    frst_Values = magentaValues;
-    scnd_Values = yellowValues;
-    thrd_Values = cyanValues;
-
     frstColor = Qt::magenta;
     scndColor = Qt::yellow;
     thrdColor = Qt::cyan;
@@ -229,8 +189,6 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     scndColorName = "Yellow";
     thrdColorName = "Cyan";
     fourthColorName = "";
-
-    axisXMax = 100;
 
     setChart();
     return image;
@@ -254,21 +212,6 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
     thrd_Values.fill(0);
     fourth_Values.fill(0);
 
-    QVector<double> magentaValues;
-    QVector<double> yellowValues;
-    QVector<double> cyanValues;
-    QVector<double> blackValues;
-
-    magentaValues.resize(101);
-    yellowValues.resize(101);
-    cyanValues.resize(101);
-    blackValues.resize(101);
-
-    magentaValues.fill(0);
-    yellowValues.fill(0);
-    cyanValues.fill(0);
-    blackValues.fill(0);
-
     for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); ++col) {
@@ -287,10 +230,10 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
             double yellow = abs(cmyk->getYellow());
             double black = abs(cmyk->getBlack());
 
-            ++magentaValues[magenta];
-            ++yellowValues[yellow];
-            ++cyanValues[cyan];
-            ++blackValues[black];
+            ++frst_Values[magenta];
+            ++scnd_Values[yellow];
+            ++thrd_Values[cyan];
+            ++fourth_Values[black];
 
             //used for the change of the pixels in the picture
             rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
@@ -304,11 +247,6 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
         }
     }
 
-    frst_Values = magentaValues;
-    scnd_Values = yellowValues;
-    thrd_Values = cyanValues;
-    fourth_Values = blackValues;
-
     frstColor = Qt::magenta;
     scndColor = Qt::yellow;
     thrdColor = Qt::cyan;
@@ -318,8 +256,6 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
     scndColorName = "Yellow";
     thrdColorName = "Cyan";
     fourthColorName = "Black";
-
-    axisXMax = 100;
 
     setChartCMYK();
 
@@ -342,40 +278,9 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
     scnd_Values.fill(0);
     thrd_Values.fill(0);
 
-    QVector<double> hueValues;
-    QVector<double> saturationValues;
-    QVector<double> intensityValues;
-
-    hueValues.resize(361);
-    saturationValues.resize(361);
-    intensityValues.resize(361);
-
-    hueValues.fill(0);
-    saturationValues.fill(0);
-    intensityValues.fill(0);
-
     for (int row = 0; row < image.height(); ++row) {
         QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(row));
         for (int col = 0; col < image.width(); ++col) {
-            if(row == 416 && col == 621){
-                qDebug() << "catch";
-            }
-            if(row == 416 && col == 622){
-                qDebug() << "catch";
-            }
-            if(row == 416 && col == 623){
-                qDebug() << "catch";
-            }
-            if(row == 416 && col == 624){
-                qDebug() << "catch";
-            }
-            if(row == 416 && col == 625){
-                qDebug() << "catch";
-            }
-            if(row == 416 && col == 626){
-                qDebug() << "catch";
-            }
-
             QRgb &model = line[col];
             double red = qRed(model);
             double green = qGreen(model);
@@ -387,9 +292,9 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             double saturation = hsi->getSaturation();
             double intensity = hsi->getIntensity();
 
-            ++hueValues[hue];
-            ++saturationValues[saturation];
-            ++intensityValues[intensity];
+            ++frst_Values[hue];
+            ++scnd_Values[saturation];
+            ++thrd_Values[intensity];
 
 //            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
 //            int newRed = abs(rgb->getRed());
@@ -402,10 +307,6 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
         }
     }
 
-    frst_Values = hueValues;
-    scnd_Values = saturationValues;
-    thrd_Values = intensityValues;
-
     frstColor = Qt::black;
     scndColor = Qt::darkGray;
     thrdColor = Qt::lightGray;
@@ -416,9 +317,8 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
     thrdColorName = "Intensity";
     fourthColorName = "";
 
-    axisXMax = 360;
-
     setChart();
+
     return image;
 }
 
@@ -443,6 +343,18 @@ void RGBHistogramWidget::setColourSets(){
     fourthColorSet->setColor(fourthColor);
 }
 
+void RGBHistogramWidget::setHistogramChartXYAxis(int maxValAxisX, int maxValAxisY){
+
+    //create the default axis
+    histogramChart->createDefaultAxes(); // set the axis
+    histogramChart->axes(Qt::Horizontal).back()->setRange(0, maxValAxisY);
+    histogramChart->axes(Qt::Horizontal).back()->setTitleText("axis x");
+    histogramChart->axes(Qt::Horizontal).back()->setGridLineVisible(false);
+
+    histogramChart->axes(Qt::Vertical).back()->setRange(0, maxValAxisX);
+    histogramChart->axes(Qt::Vertical).back()->setTitleText("axis y");
+}
+
 void RGBHistogramWidget::setChart(){
 
     setColourSets();
@@ -464,16 +376,7 @@ void RGBHistogramWidget::setChart(){
             )
         );
 
-    //create the default axis
-    histogramChart->createDefaultAxes(); // set the axis
-    histogramChart->axes(Qt::Horizontal).back()->setRange(0, axisXMax);
-    histogramChart->axes(Qt::Horizontal).back()->setTitleText("axis x");
-    histogramChart->axes(Qt::Horizontal).back()->setGridLineVisible(false);
-
-    histogramChart->axes(Qt::Vertical).back()->setRange(0, maxValue);
-    histogramChart->axes(Qt::Vertical).back()->setTitleText("axis y");
-
-
+    setHistogramChartXYAxis(maxValue, frst_Values.length() - 1);
 }
 
 void RGBHistogramWidget::setChartCMYK(){
@@ -501,14 +404,5 @@ void RGBHistogramWidget::setChartCMYK(){
             )
         );
 
-    //create the default axis
-    histogramChart->createDefaultAxes(); // set the axis
-    histogramChart->axes(Qt::Horizontal).back()->setRange(0, axisXMax);
-    histogramChart->axes(Qt::Horizontal).back()->setTitleText("axis x");
-    histogramChart->axes(Qt::Horizontal).back()->setGridLineVisible(false);
-
-    histogramChart->axes(Qt::Vertical).back()->setRange(0, maxValue);
-    histogramChart->axes(Qt::Vertical).back()->setTitleText("axis y");
-
-
+    setHistogramChartXYAxis(maxValue, frst_Values.length() - 1);
 }
