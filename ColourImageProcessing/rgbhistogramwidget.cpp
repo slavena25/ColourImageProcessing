@@ -175,6 +175,9 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             int newBlue = rgb->getBlue();
 
             model = qRgb(newRed, newGreen, newBlue);
+
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
         }
     }
 
@@ -232,16 +235,14 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
 
             //used for the change of the pixels in the picture
             rgb = new ColourModel_RGB(_colorConversion->CMYKtoRGB(cmyk));
-            int newRed = rgb->getRed();
-            int newGreen = rgb->getGreen();
-            int newBlue = rgb->getBlue();
+            int newRed = abs(rgb->getRed());
+            int newGreen = abs(rgb->getGreen());
+            int newBlue = abs(rgb->getBlue());
 
             model = qRgb(newRed, newGreen, newBlue);
 
-            //QColor newCmykColour(newRed, newGreen, newBlue);
-            //QColor newCmykColour(red, green, blue, 255);
-            //QColor newColor = QColor::fromCmyk(cmyk->getCyan(), cmyk->getMagenta(), cmyk->getYellow(), cmyk->getBlack(), 255);
-            //image.setPixelColor(col, row, newCmykColour);
+            QColor newCmykColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmykColour);
         }
     }
 
@@ -294,15 +295,13 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             ++scnd_Values[saturation];
             ++thrd_Values[intensity];
 
-//            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
-//            int newRed = rgb->getRed();
-//            int newGreen = rgb->getGreen();
-//            int newBlue = rgb->getBlue();
-//            //model = qRgb(newRed, newGreen, newBlue);
 
-            //don't use?
-//            QColor newCmyColour(newRed, newGreen, newBlue);
-//            image.setPixelColor(col, row, newCmyColour);
+            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
+            int newRed = abs(rgb->getRed());
+            int newGreen = abs(rgb->getGreen());
+            int newBlue = abs(rgb->getBlue());
+            QColor newCmyColour(newRed, newGreen, newBlue);
+            image.setPixelColor(col, row, newCmyColour);
         }
     }
 
