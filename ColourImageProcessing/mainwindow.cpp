@@ -384,7 +384,7 @@ void MainWindow::on_ChangeRedChannelButton_clicked(){
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
             QRgb &rgb = line[x];
-            rgb = qRgb(qRed(rChannelValue), qGreen(rgb), qBlue(rgb));
+            rgb = qRgb(rChannelValue, qGreen(rgb), qBlue(rgb));
         }
     }
 
@@ -410,8 +410,8 @@ void MainWindow::on_ChangeGreenChannelButton_clicked(){
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
-                            QRgb &rgb = line[x];
-                            rgb = qRgb(qRed(rgb), qGreen(gChannelValue), qBlue(rgb));
+            QRgb &rgb = line[x];
+            rgb = qRgb(qRed(rgb), gChannelValue, qBlue(rgb));
         }
     }
 
@@ -437,8 +437,8 @@ void MainWindow::on_ChangeBlueChannelButton_clicked(){
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
         for (int x = 0; x < _changedImage.width(); ++x) {
-                            QRgb &rgb = line[x];
-                            rgb = qRgb(qRed(rgb), qGreen(rgb), qBlue(bChannelValue));
+            QRgb &rgb = line[x];
+            rgb = qRgb(qRed(rgb), qGreen(rgb), bChannelValue);
         }
     }
 
