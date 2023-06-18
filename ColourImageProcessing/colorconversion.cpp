@@ -20,16 +20,20 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
     double doubleG = rgb->Green / 255;
     double doubleB = rgb->Blue / 255;
 
-    double c = 0;
-    double m = 0;
-    double y = 0;
+    double c = 1 - doubleR;
+    double m = 1 - doubleG;
+    double y = 1 - doubleB;
 
-    double k = (1 - MaxVal(MaxVal(doubleR, doubleG), doubleB));
+    double k = 1 - MaxVal(MaxVal(doubleR, doubleG), doubleB);
 
-    if(k != 1){
-        c = qRound(((1 - doubleR - k)/(1 - k)) * 100);
-        m = qRound(((1 - doubleG - k)/(1 - k)) * 100);
-        y = qRound(((1 - doubleB - k)/(1 - k)) * 100);
+    if(k < 1 && k >= 0){
+        c = qRound(((c - k)/(1 - k)) * 100);
+        m = qRound(((m - k)/(1 - k)) * 100);
+        y = qRound(((y - k)/(1 - k)) * 100);
+
+        c = (c / 100) * c;
+        m = (m / 100) * m;
+        y = (y / 100) * y;
     }
 
     k = qRound(k * 100);
@@ -42,9 +46,13 @@ ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
     double doubleG = rgb->Green / 255;
     double doubleB = rgb->Blue / 255;
 
-    int c = qRound((1 - doubleR) * 100);
-    int m = qRound((1 - doubleG) * 100);
-    int y = qRound((1 - doubleB) * 100);
+    double c = qRound((1 - doubleR) * 100);
+    double m = qRound((1 - doubleG) * 100);
+    double y = qRound((1 - doubleB) * 100);
+
+    c = (c / 100) * c;
+    m = (m / 100) * m;
+    y = (y / 100) * y;
 
     return ColourModel_CMY(c, m, y);
 
@@ -111,9 +119,9 @@ ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
     double m = cmy->Magenta;
     double y = cmy->Yellow;
 
-    double r = qRound((255 * (100 - c)) / 100);
-    double g = qRound((255 * (100 - m)) / 100);
-    double b = qRound((255 * (100 - y)) / 100);
+    double r = (255 * (100 - c)) / 100;
+    double g = (255 * (100 - m)) / 100;
+    double b = (255 * (100 - y)) / 100;
 
     return ColourModel_RGB(r, g, b);
 }
@@ -134,9 +142,9 @@ ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 
 ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
 {
-    double r = 0;
-    double g = 0;
-    double b = 0;
+    double r;
+    double g;
+    double b;
 
     double h = hsi->Hue;
     double s = hsi->Saturation;

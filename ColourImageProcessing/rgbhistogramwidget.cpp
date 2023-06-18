@@ -122,8 +122,8 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
     fourthColor = Qt::transparent;
 
     frstColorName = "Red";
-    scndColorName = "Blue";
-    thrdColorName = "Green";
+    scndColorName = "Green";
+    thrdColorName = "Blue";
     fourthColorName = "";
 
     setChart();
