@@ -307,7 +307,7 @@ void MainWindow::on_Open_Clicked(){
 }
 
 void MainWindow::on_Save_Clicked(){
-    QString fileName = QFileDialog::getSaveFileName(this, "Save Image", "", "Image Files (*.png *.jpg *.bmp *.tiff)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save Image", "ModifiedFile", "PNG Image (*.png);; JPG Image (*.jpg);; BMP Image (*.bmp);; TIFF Image (*.tiff)");
     if(fileName.isEmpty()){
         return;
     }

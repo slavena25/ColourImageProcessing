@@ -2,7 +2,6 @@
 #define COLOURMODEL_RGB_H
 
 #include <QDebug>
-#include "icolourmodel.h"
 #include "colorconversion.h"
 
 class ColourModel_RGB
