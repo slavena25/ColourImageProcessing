@@ -22,7 +22,7 @@ public:
     void setMagenta(double m);
     void setYellow(double y);
 
-protected:
+private:
     double Cyan;
     double Magenta;
     double Yellow;

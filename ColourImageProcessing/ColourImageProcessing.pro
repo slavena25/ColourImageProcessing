@@ -15,7 +15,6 @@ SOURCES += \
     colourmodel_cmyk.cpp \
     colourmodel_hsi.cpp \
     colourmodel_rgb.cpp \
-    icolourmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     rgbhistogramwidget.cpp
@@ -26,7 +25,6 @@ HEADERS += \
     colourmodel_cmyk.h \
     colourmodel_hsi.h \
     colourmodel_rgb.h \
-    icolourmodel.h \
     mainwindow.h \
     rgbhistogramwidget.h
 

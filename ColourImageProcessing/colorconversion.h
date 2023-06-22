@@ -35,14 +35,6 @@ public:
     ColourModel_HSI RGBtoHSI(ColourModel_RGB* rgb);
     ColourModel_RGB CMYtoRGB(ColourModel_CMY* cmy);
     ColourModel_RGB CMYKtoRGB(ColourModel_CMYK* cmyk);
-    ColourModel_RGB HSItoRGB(ColourModel_HSI* hsi);
-
-    //conversion
-    void convertToCMY(ColourModel_CMY* cmy, ColourModel_RGB* rgb);
-    void convertToCMYK(ColourModel_CMYK* cmyk, ColourModel_RGB* rgb);
-    void convertToHSI(ColourModel_HSI* hsi, ColourModel_RGB* rgb);
-
-
 };
 
 

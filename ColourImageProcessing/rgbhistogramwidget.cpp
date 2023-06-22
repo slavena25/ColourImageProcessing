@@ -1,4 +1,5 @@
 #include "rgbhistogramwidget.h"
+#include <algorithm>
 
 //constructor
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
@@ -283,12 +284,8 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             ++scnd_Values[saturation];
             ++thrd_Values[intensity];
 
-
-            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
-            int newRed = abs(rgb->getRed());
-            int newGreen = abs(rgb->getGreen());
-            int newBlue = abs(rgb->getBlue());
-            QColor newCmyColour(newRed, newGreen, newBlue);
+            QColor newCmyColour(hue, saturation, intensity);
+            newCmyColour =  newCmyColour.toRgb();
             image.setPixelColor(col, row, newCmyColour);
         }
     }

@@ -23,7 +23,7 @@ public:
     void setGreen(int g);
     void setBlue(int b);
 
-protected:
+private:
     double Red;
     double Green;
     double Blue;

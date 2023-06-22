@@ -22,7 +22,7 @@ public:
     void setSaturation(int s);
     void setIntensity(int i);
 
-protected:
+private:
     double Hue;
     double Saturation;
     double Intensity;

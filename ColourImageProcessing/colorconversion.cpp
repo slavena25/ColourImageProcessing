@@ -31,6 +31,8 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
         m = qRound(((m - k)/(1 - k)) * 100);
         y = qRound(((y - k)/(1 - k)) * 100);
 
+        //Lower the values with Channel% of Channel
+        //so we can see a change in the picture and have a acurate histogram with the new color
         c = (c / 100) * c;
         m = (m / 100) * m;
         y = (y / 100) * y;
@@ -50,6 +52,8 @@ ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
     double m = qRound((1 - doubleG) * 100);
     double y = qRound((1 - doubleB) * 100);
 
+    //Lower the values with Channel% of Channel
+    //so we can see a change in the picture and have a acurate histogram with the new color
     c = (c / 100) * c;
     m = (m / 100) * m;
     y = (y / 100) * y;
@@ -76,39 +80,34 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
     }
 
     //get the intensity
-    int _RGB = (_red + _green + _blue);
-    i = _RGB / 3;
+    double _RGB = (_red + _green + _blue);
+
+    double rn = _red / _RGB;
+    double gn = _green / _RGB;
+    double bn = _blue / _RGB;
+
+    i = _RGB /  3 ;
 
     //get the saturation
-    double min = MinVal(_red, MinVal(_green, _blue));
-    s = 1 - 3*(min / _RGB);
+    double min = MinVal(rn, MinVal(gn, bn));
+    s = 1 - ((3 * min) + 0.000001);
 
-    if(s < 0.00001)
-    {
-        s = 0;
-    }
-    else if(s > 0.99999)
-    {
-        s = 1;
-    }
+    double a = rn - gn;
+    double b = rn - bn;
+    double c = gn - bn;
 
-    if(s != 0)
-    {
-        double a = _red - _green;
-        double b = _red - _blue;
-        h = 0.5 * (a + b) / sqrt((qPow(a, 2) + qPow(b, 2)));
+    //Calculate Theta to get the Hue value
+        h = 0.5 * (a + b) / (sqrt((qPow(a, 2) + (b * c))) + 0.000001);
         h = acos(h);
 
-        if(_blue > _green)
+        if(bn > gn)
         {
-            h = ((360 * 3.14159265) / 180.0) - h;
+            h = 2 * M_PI - h;
         }
-    }
 
-    h = qRound((h * 180) / 3.14159265);
-    s = qRound(s*100);
+    h = h * 180 / M_PI;
+    s = s * 100;
     i = i;
-
 
     return ColourModel_HSI(h, s, i);
 }
@@ -138,39 +137,6 @@ ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
     double b = qRound((255 * (1 - y) * (1 - k)));
 
     return ColourModel_RGB(r, g, b);
-}
-
-ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi)
-{
-    double r;
-    double g;
-    double b;
-
-    double h = hsi->Hue;
-    double s = hsi->Saturation;
-    double i = hsi->Intensity;
-
-    if((h >= 0) && (h <= 120))
-    {
-        r = qRound(((1 + ((s * cos(h)) / cos(60-h))) / 3));
-        b = qRound(((1 - s) / 3));
-        g = qRound((1 - (r + b)));
-    }
-    else if ((h >= 120) && (h <= 240))
-    {
-        r = qRound(((1 - s) / 3));
-        g = qRound(((1 + ((s * cos(h)) / cos(60 - h))) / 3));
-        b = qRound((1 - (r + g)));
-    }
-    else if ((h >= 240) && (h <= 360))
-    {
-       g = qRound(((1 -  s) / 3));
-       b = qRound(((1 + ((s * cos(h)) / cos(60 - h))) / 3));
-       r = qRound((1 - (g + b)));
-    }
-
-    return ColourModel_RGB(r, g, b);
-
 }
 
 
