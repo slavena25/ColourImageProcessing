@@ -274,15 +274,16 @@ void MainWindow::connectSignals(){
 }
 
 void MainWindow::on_Open_Clicked(){
-    //when opening a file, chech if the qLineEdit, that will display the path is empty
-    if(!openPath->text().isEmpty()){
-        openPath->clear();
-    }
 
     //open file, if file is empty - do nothing
     fileName = QFileDialog::getOpenFileName(this,"Open Image", "", "Image Files (*.png *.jpg *.bmp *.tiff)");
     if(fileName.isEmpty()){
         return;
+    }
+
+    //when opening a file, chech if the qLineEdit, that will display the path is empty
+    if(!openPath->text().isEmpty()){
+        openPath->clear();
     }
 
     //display the path to the file in the qLineEdit
