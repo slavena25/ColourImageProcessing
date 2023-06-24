@@ -321,13 +321,15 @@ void MainWindow::on_Save_Clicked(){
 }
 
 void MainWindow::saveTempImage(){
+
     QImage _originalImage(fileName);
-    QFileInfo fileInfo(fileName);
-    tempPath = "tempFiles/temp." + fileInfo.suffix();
-    if(QFile::exists(tempPath)){
+
+    if(!tempPath.isEmpty()){ //if tempPath is not empty, delete the previously, saved image
         QFile::remove(tempPath);
     }
 
+    QFileInfo fileInfo(fileName);
+    tempPath = "tempFiles/temp." + fileInfo.suffix();
     imageViewer->resize(_originalImage.size());
     _originalImage.save(tempPath);
 }
