@@ -31,6 +31,8 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
+RC_ICONS += ../iconImage/paint_palette_brush_icon_231489.ico
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

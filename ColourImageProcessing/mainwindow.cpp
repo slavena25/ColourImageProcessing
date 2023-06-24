@@ -20,9 +20,6 @@ void MainWindow::initWidget(){
 
     this->setWindowTitle("Image Colour Processing");
 
-    //to be implemented --> app icon
-    //this->setWindowIcon(QIcon("icons/icon.png"));
-
     ui_centralWidget = new QWidget();
 
     //------------------Change Pixel Colour------------------
@@ -330,7 +327,7 @@ void MainWindow::saveTempImage(){
     }
 
     QFileInfo fileInfo(fileName);
-    tempPath = "tempFiles/temp." + fileInfo.suffix();
+    tempPath = "../tempFiles/temp." + fileInfo.suffix();
     imageViewer->resize(_originalImage.size());
     _originalImage.save(tempPath);
 }
