@@ -6,6 +6,8 @@
 #include "colourmodel_cmyk.h"
 #include "colourmodel_hsi.h"
 
+#include <QtMath>
+
 
 class ColourModel_RGB;
 class ColourModel_CMY;
@@ -35,6 +37,7 @@ public:
     ColourModel_HSI RGBtoHSI(ColourModel_RGB* rgb);
     ColourModel_RGB CMYtoRGB(ColourModel_CMY* cmy);
     ColourModel_RGB CMYKtoRGB(ColourModel_CMYK* cmyk);
+    ColourModel_RGB HSItoRGB(ColourModel_HSI* hsi);
 };
 
 

@@ -100,7 +100,7 @@ void MainWindow::initWidget(){
     setRedChannel->setPlaceholderText("Red Channel Value");
     setRedChannel->setVisible(false);
 
-    changeRedChannelButton = new QPushButton("Change Red Chanel");
+    changeRedChannelButton = new QPushButton("Change Red Channel");
     changeRedChannelButton->setFixedHeight(22);
     changeRedChannelButton->setVisible(false);
 
@@ -114,7 +114,7 @@ void MainWindow::initWidget(){
     setGreenChannel->setPlaceholderText("Green Channel Value");
     setGreenChannel->setVisible(false);
 
-    changeGreenChannelButton = new QPushButton("Change Green Chanel");
+    changeGreenChannelButton = new QPushButton("Change Green Channel");
     changeGreenChannelButton->setFixedHeight(22);
     changeGreenChannelButton->setVisible(false);
 
@@ -128,7 +128,7 @@ void MainWindow::initWidget(){
     setBlueChannel->setPlaceholderText("Blue Channel Value");
     setBlueChannel->setVisible(false);
 
-    changeBlueChannelButton = new QPushButton("Change Blue Chanel");
+    changeBlueChannelButton = new QPushButton("Change Blue Channel");
     changeBlueChannelButton->setFixedHeight(22);
     changeBlueChannelButton->setVisible(false);
 
@@ -150,7 +150,6 @@ void MainWindow::initWidget(){
     buttonLayout->addWidget(openPath);
     buttonLayout->addWidget(openImage);
     buttonLayout->addWidget(saveImage);
-//    buttonLayout->addWidget(showChangePixelColourBox);
 
     imageViewer = new QLabel();
     imageViewer->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

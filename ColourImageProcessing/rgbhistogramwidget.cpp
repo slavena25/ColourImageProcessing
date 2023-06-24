@@ -102,9 +102,6 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
             int green = qGreen(model);
             int blue = qBlue(model);
 
-            QColor newCmyColour(red, green, blue);
-            image.setPixelColor(col, row, newCmyColour);
-
             ++frst_Values[red];
             ++scnd_Values[green];
             ++thrd_Values[blue];
@@ -169,8 +166,8 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
 
             model = qRgb(newRed, newGreen, newBlue);
 
-            QColor newCmyColour(newRed, newGreen, newBlue);
-            image.setPixelColor(col, row, newCmyColour);
+            delete cmy;
+            delete rgb;
         }
     }
 
@@ -232,8 +229,8 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
 
             model = qRgb(newRed, newGreen, newBlue);
 
-            QColor newCmykColour(newRed, newGreen, newBlue);
-            image.setPixelColor(col, row, newCmykColour);
+            delete cmyk;
+            delete rgb;
         }
     }
 
@@ -284,9 +281,12 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             ++scnd_Values[saturation];
             ++thrd_Values[intensity];
 
-            QColor newCmyColour(hue, saturation, intensity);
-            newCmyColour =  newCmyColour.toRgb();
-            image.setPixelColor(col, row, newCmyColour);
+            double newRed = qRound((hsi->getHue() / 360) * 255);
+            double newGreen = qRound((hsi->getSaturation() / 100) * 255);
+            double newBlue = hsi->getIntensity();
+            model = qRgb(newRed, newGreen, newBlue);
+
+            delete hsi;
         }
     }
 
