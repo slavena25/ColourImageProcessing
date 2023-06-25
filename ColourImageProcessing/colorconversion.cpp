@@ -4,16 +4,19 @@ ColorConversion::ColorConversion(){
 
 }
 
+//get max val of two
 double ColorConversion::MaxVal(double a, double b)
 {
     return a >= b ? a : b;
 }
 
+//get min val of two
 double ColorConversion::MinVal(double a, double b)
 {
     return a >= b ? b : a;
 }
 
+//convert rgb values to CMYK
 ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
 {
     double doubleR = rgb->Red / 255;
@@ -42,6 +45,7 @@ ColourModel_CMYK ColorConversion::RGBtoCMYK(ColourModel_RGB* rgb)
     return ColourModel_CMYK(c, m, y , k );
 }
 
+//convert RGB values to CMY
 ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 {
     double doubleR = rgb->Red / 255;
@@ -62,6 +66,7 @@ ColourModel_CMY ColorConversion::RGBtoCMY(ColourModel_RGB* rgb)
 
 }
 
+//convert RGB values to HSI
 ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
 {
     double _red = rgb->Red;
@@ -112,6 +117,7 @@ ColourModel_HSI ColorConversion::RGBtoHSI(ColourModel_RGB* rgb)
     return ColourModel_HSI(h, s, i);
 }
 
+//reverse convert CMY values to RGB
 ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
 {
     double c = cmy->Cyan;
@@ -125,6 +131,7 @@ ColourModel_RGB ColorConversion::CMYtoRGB(ColourModel_CMY* cmy)
     return ColourModel_RGB(r, g, b);
 }
 
+//reverse convert CMYK values to RGB
 ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
 {
     double c = cmyk->Cyan / 100;
@@ -139,6 +146,7 @@ ColourModel_RGB ColorConversion::CMYKtoRGB(ColourModel_CMYK* cmyk)
     return ColourModel_RGB(r, g, b);
 }
 
+//reverse convert HSI values to RGB
 ColourModel_RGB ColorConversion::HSItoRGB(ColourModel_HSI* hsi){
 
     double r = 0;

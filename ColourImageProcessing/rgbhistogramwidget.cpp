@@ -84,11 +84,13 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
     //clear the chart, before updating it
     clearColourSets();
 
+    //resize vectors, depending on the colour model
     frst_Values.resize(256);
     scnd_Values.resize(256);
     thrd_Values.resize(256);
     fourth_Values.resize(256);
 
+    //fill vectors with zeros
     frst_Values.fill(0);
     scnd_Values.fill(0);
     thrd_Values.fill(0);
@@ -108,6 +110,7 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
         }
     }
 
+    //initialize needed colours
     frstColor = Qt::red;
     scndColor = Qt::green;
     thrdColor = Qt::blue;
@@ -118,6 +121,7 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
     thrdColorName = "Blue";
     fourthColorName = "";
 
+    //set chart
     setChart();
 }
 
@@ -164,8 +168,9 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             int newGreen = rgb->getGreen();
             int newBlue = rgb->getBlue();
 
-            model = qRgb(newRed, newGreen, newBlue);
+            model = qRgb(newRed, newGreen, newBlue); // update image colour
 
+            //deallocate memory
             delete cmy;
             delete rgb;
         }
@@ -182,6 +187,7 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     fourthColorName = "";
 
     setChart();
+
     return image;
 }
 
@@ -227,8 +233,9 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
             int newGreen = abs(rgb->getGreen());
             int newBlue = abs(rgb->getBlue());
 
-            model = qRgb(newRed, newGreen, newBlue);
+            model = qRgb(newRed, newGreen, newBlue); // update pixel colour
 
+            //deallocate memory
             delete cmyk;
             delete rgb;
         }
@@ -284,8 +291,9 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             double newRed = qRound((hsi->getHue() / 360) * 255);
             double newGreen = qRound((hsi->getSaturation() / 100) * 255);
             double newBlue = hsi->getIntensity();
-            model = qRgb(newRed, newGreen, newBlue);
+            model = qRgb(newRed, newGreen, newBlue); // update image
 
+            //deallocate memory
             delete hsi;
         }
     }

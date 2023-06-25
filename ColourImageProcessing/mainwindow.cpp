@@ -270,6 +270,7 @@ void MainWindow::connectSignals(){
     QObject::connect(colourModelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(colourModelComboBox_CurrentIndexChanged(int)));
 }
 
+//"open" button slot
 void MainWindow::on_Open_Clicked(){
 
     //open file, if file is empty - do nothing
@@ -303,13 +304,14 @@ void MainWindow::on_Open_Clicked(){
     }
 }
 
+//"save" button slot
 void MainWindow::on_Save_Clicked(){
     QString fileName = QFileDialog::getSaveFileName(this, "Save Image", "ModifiedFile", "PNG Image (*.png);; JPG Image (*.jpg);; BMP Image (*.bmp);; TIFF Image (*.tiff)");
     if(fileName.isEmpty()){
         return;
     }
 
-    QImage image = imageViewer->pixmap().toImage();
+    QImage image = imageViewer->pixmap().toImage(); //get current state of image
     if (image.save(fileName)) {
         QMessageBox::information(this, "Save Image", "Image saved successfully.");
     } else {
@@ -318,20 +320,23 @@ void MainWindow::on_Save_Clicked(){
 
 }
 
+//create and update Temp image
 void MainWindow::saveTempImage(){
 
     QImage _originalImage(fileName);
 
-    if(!tempPath.isEmpty()){ //if tempPath is not empty, delete the previously, saved image
+    if(!tempPath.isEmpty()){ //if tempPath is not empty, delete the previously saved image
         QFile::remove(tempPath);
     }
 
-    QFileInfo fileInfo(fileName);
+    QFileInfo fileInfo(fileName); //do this to be able to get filename suffix
     tempPath = "../tempFiles/temp." + fileInfo.suffix();
-    imageViewer->resize(_originalImage.size());
+
+    imageViewer->resize(_originalImage.size()); // copy original image
     _originalImage.save(tempPath);
 }
 
+//delete temp image
 void MainWindow::deleteTempImage(){
     if(QFile::exists(tempPath)){
         QFile::remove(tempPath);
@@ -364,6 +369,7 @@ void MainWindow::setVisibleBlueChannelChangeLayout(bool visible){
     changeBlueChannelButton->setVisible(visible);
 }
 
+//reveal the red channel change layout
 void MainWindow::on_ShowRedChannelChangeBox_clicked(){
     //show the red channel change widgets
     setVisibleRedChannelChangeLayout(true);
@@ -374,10 +380,11 @@ void MainWindow::on_ShowRedChannelChangeBox_clicked(){
     setVisibleBlueChannelChangeLayout(false);
 }
 
+//execute red channel change
 void MainWindow::on_ChangeRedChannelButton_clicked(){
 
     QImage _changedImage(tempPath);
-    int rChannelValue = setRedChannel->text().toInt(); // set red channel value
+    int rChannelValue = setRedChannel->text().toInt(); // get new red channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
@@ -391,6 +398,7 @@ void MainWindow::on_ChangeRedChannelButton_clicked(){
     colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
+//reveal the green channel change layout
 void MainWindow::on_ShowGreenChannelChangeBox_clicked(){
     //show green channel change widgets
     setVisibleGreenChannelChangeLayout(true);
@@ -401,10 +409,11 @@ void MainWindow::on_ShowGreenChannelChangeBox_clicked(){
     setVisibleBlueChannelChangeLayout(false);
 }
 
+//execute green channel change
 void MainWindow::on_ChangeGreenChannelButton_clicked(){
 
     QImage _changedImage(tempPath);
-    int gChannelValue = setGreenChannel->text().toInt(); // set green channel value
+    int gChannelValue = setGreenChannel->text().toInt(); // get new green channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
@@ -418,6 +427,7 @@ void MainWindow::on_ChangeGreenChannelButton_clicked(){
     colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
+//reveal the blue channel change layout
 void MainWindow::on_ShowBlueChannelChangeBox_clicked(){
     //show blue channel change widgets
     setVisibleBlueChannelChangeLayout(true);
@@ -428,10 +438,11 @@ void MainWindow::on_ShowBlueChannelChangeBox_clicked(){
     setVisibleGreenChannelChangeLayout(false);
 }
 
+//execute blue channel change
 void MainWindow::on_ChangeBlueChannelButton_clicked(){
 
     QImage _changedImage(tempPath);
-    int bChannelValue = setBlueChannel->text().toInt(); // set blue channel value
+    int bChannelValue = setBlueChannel->text().toInt(); // get new blue channel value
 
     for (int y = 0; y < _changedImage.height(); ++y) {
         QRgb *line = reinterpret_cast<QRgb*>(_changedImage.scanLine(y));
@@ -445,6 +456,7 @@ void MainWindow::on_ChangeBlueChannelButton_clicked(){
     colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
+//reveal the swap pixel layout
 void MainWindow::on_ShowSwapPixelColourBox_clicked(){
     //show pixel swap widgets
     setVisiblePixelColourSwapLayout(true);
@@ -455,6 +467,7 @@ void MainWindow::on_ShowSwapPixelColourBox_clicked(){
     setVisibleBlueChannelChangeLayout(false);
 }
 
+//execute pixel swap
 void MainWindow::on_ChangePixelColourButton_clicked(){
 
     QImage _currentImage = imageViewer->pixmap().toImage();
@@ -468,12 +481,13 @@ void MainWindow::on_ChangePixelColourButton_clicked(){
     int setB = setPixelBlue->text().toInt();
 
     for(int row = 0; row < _currentImage.height(); row++){
+        QRgb *line = reinterpret_cast<QRgb*>(_currentImage.scanLine(row));
         for(int col = 0; col < _currentImage.width(); col++){
-            QColor _pixelColour = _currentImage.pixelColor(col, row);
+            QRgb &rgb = line[col];
+            QColor _pixelColour = QColor(qRed(rgb), qGreen(rgb), qBlue(rgb)); //get the colour of the current pixel
             QColor _searchColour(getR, getG, getB);
-            QColor _newColour(setR, setG, setB);
             if(_pixelColour == _searchColour){
-                _currentImage.setPixelColor(col, row, _newColour);
+                rgb = qRgb(setR, setG, setB);
             }
         }
     }
@@ -481,6 +495,7 @@ void MainWindow::on_ChangePixelColourButton_clicked(){
     imageViewer->setPixmap(QPixmap::fromImage(_currentImage));
 }
 
+//shortcur slot, hide open layouts
 void MainWindow::on_HideOpenOptions_clicked(){
     setVisiblePixelColourSwapLayout(false);
     setVisibleRedChannelChangeLayout(false);
@@ -488,11 +503,13 @@ void MainWindow::on_HideOpenOptions_clicked(){
     setVisibleBlueChannelChangeLayout(false);
 }
 
+//get original image
 void MainWindow::on_RevertImageButton_clicked(){
     saveTempImage();
     colourModelComboBox_CurrentIndexChanged(colourModelComboBox->currentIndex());
 }
 
+//display information box
 void MainWindow::on_Information_clicked(){
     QMessageBox shortcutInfo;
     shortcutInfo.setText("Information");
@@ -508,6 +525,7 @@ void MainWindow::on_Information_clicked(){
     int ret = shortcutInfo.exec();
 }
 
+//combo box change
 void MainWindow::colourModelComboBox_CurrentIndexChanged(int index){
     QImage image(tempPath);
     QString colourModel = colourModelComboBox->currentText();
