@@ -1,19 +1,15 @@
 #include "rgbhistogramwidget.h"
+#include <algorithm>
 
+//constructor
 RGBHistogramWidget::RGBHistogramWidget(QWidget *parent) : QWidget(parent)
 {
+    //call the initalization function
     HistogramWidgetInit();
 }
 
+//init widget
 void RGBHistogramWidget::HistogramWidgetInit(){
-    //universal vectors that will be used in setChart()
-    //the vectors will be reset and new values will be added to them every time;
-    //resize the vectors to 360, because that is what hsi uses as values
-//    frst_Values.resize(360);
-//    scnd_Values.resize(360);
-//    thrd_Values.resize(360);
-//    fourth_Values.resize(360);
-
     //intialize colorConversion class
     _colorConversion = new ColorConversion();
 
@@ -60,6 +56,7 @@ void RGBHistogramWidget::HistogramWidgetInit(){
     grLayout->addWidget(histogramChartView);
 }
 
+//destructor
 RGBHistogramWidget::~RGBHistogramWidget(){
 
     //layout
@@ -87,13 +84,13 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
     //clear the chart, before updating it
     clearColourSets();
 
-    ChoosenImageColourType = ImageColourType::RGB;
-
+    //resize vectors, depending on the colour model
     frst_Values.resize(256);
     scnd_Values.resize(256);
     thrd_Values.resize(256);
     fourth_Values.resize(256);
 
+    //fill vectors with zeros
     frst_Values.fill(0);
     scnd_Values.fill(0);
     thrd_Values.fill(0);
@@ -107,25 +104,24 @@ void RGBHistogramWidget::setImageRGB(QImage &image)
             int green = qGreen(model);
             int blue = qBlue(model);
 
-            QColor newCmyColour(red, green, blue);
-            image.setPixelColor(col, row, newCmyColour);
-
             ++frst_Values[red];
             ++scnd_Values[green];
             ++thrd_Values[blue];
         }
     }
 
+    //initialize needed colours
     frstColor = Qt::red;
     scndColor = Qt::green;
     thrdColor = Qt::blue;
     fourthColor = Qt::transparent;
 
     frstColorName = "Red";
-    scndColorName = "Blue";
-    thrdColorName = "Green";
+    scndColorName = "Green";
+    thrdColorName = "Blue";
     fourthColorName = "";
 
+    //set chart
     setChart();
 }
 
@@ -134,8 +130,6 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
 {
     //clear the chart, before updating it
     clearColourSets();
-
-    ChoosenImageColourType = ImageColourType::CMY;
 
     frst_Values.resize(101);
     scnd_Values.resize(101);
@@ -174,10 +168,11 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
             int newGreen = rgb->getGreen();
             int newBlue = rgb->getBlue();
 
-            model = qRgb(newRed, newGreen, newBlue);
+            model = qRgb(newRed, newGreen, newBlue); // update image colour
 
-            QColor newCmyColour(newRed, newGreen, newBlue);
-            image.setPixelColor(col, row, newCmyColour);
+            //deallocate memory
+            delete cmy;
+            delete rgb;
         }
     }
 
@@ -192,6 +187,7 @@ QImage RGBHistogramWidget::setImageCMY(QImage &image)
     fourthColorName = "";
 
     setChart();
+
     return image;
 }
 
@@ -200,8 +196,6 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
 {
     //clear the chart, before updating it
     clearColourSets();
-
-    ChoosenImageColourType = ImageColourType::CMYK;
 
     frst_Values.resize(101);
     scnd_Values.resize(101);
@@ -239,10 +233,11 @@ QImage RGBHistogramWidget::setImageCMYK(QImage &image)
             int newGreen = abs(rgb->getGreen());
             int newBlue = abs(rgb->getBlue());
 
-            model = qRgb(newRed, newGreen, newBlue);
+            model = qRgb(newRed, newGreen, newBlue); // update pixel colour
 
-            QColor newCmykColour(newRed, newGreen, newBlue);
-            image.setPixelColor(col, row, newCmykColour);
+            //deallocate memory
+            delete cmyk;
+            delete rgb;
         }
     }
 
@@ -266,8 +261,6 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
 {
     //clear the chart, before updating it
     clearColourSets();
-
-    ChoosenImageColourType = ImageColourType::HSI;
 
     frst_Values.resize(361);
     scnd_Values.resize(361);
@@ -295,13 +288,13 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
             ++scnd_Values[saturation];
             ++thrd_Values[intensity];
 
+            double newRed = qRound((hsi->getHue() / 360) * 255);
+            double newGreen = qRound((hsi->getSaturation() / 100) * 255);
+            double newBlue = hsi->getIntensity();
+            model = qRgb(newRed, newGreen, newBlue); // update image
 
-            rgb = new ColourModel_RGB(_colorConversion->HSItoRGB(hsi));
-            int newRed = abs(rgb->getRed());
-            int newGreen = abs(rgb->getGreen());
-            int newBlue = abs(rgb->getBlue());
-            QColor newCmyColour(newRed, newGreen, newBlue);
-            image.setPixelColor(col, row, newCmyColour);
+            //deallocate memory
+            delete hsi;
         }
     }
 
@@ -320,13 +313,16 @@ QImage RGBHistogramWidget::setImageHSI(QImage &image)
     return image;
 }
 
+//clear already loaded set data
 void RGBHistogramWidget::clearColourSets(){
+    //clear previous data
     frstColorSet->remove(0, 360);
     scndColorSet->remove(0, 360);
     thrdColorSet->remove(0, 360);
     fourthColorSet->remove(0, 360);
 }
 
+//set labels and colors to the chart
 void RGBHistogramWidget::setColourSets(){
     //set the labels for all of the colors
     frstColorSet->setLabel(frstColorName);
@@ -341,66 +337,64 @@ void RGBHistogramWidget::setColourSets(){
     fourthColorSet->setColor(fourthColor);
 }
 
+//set chart axis
 void RGBHistogramWidget::setHistogramChartXYAxis(int maxValAxisX, int maxValAxisY){
 
     //create the default axis
     histogramChart->createDefaultAxes(); // set the axis
-    histogramChart->axes(Qt::Horizontal).back()->setRange(0, maxValAxisY);
+
+    //set x axis
+    histogramChart->axes(Qt::Horizontal).back()->setRange(0, maxValAxisX);
     histogramChart->axes(Qt::Horizontal).back()->setTitleText("axis x");
     histogramChart->axes(Qt::Horizontal).back()->setGridLineVisible(false);
 
-    histogramChart->axes(Qt::Vertical).back()->setRange(0, maxValAxisX);
+    //set y axis
+    histogramChart->axes(Qt::Vertical).back()->setRange(0, maxValAxisY);
     histogramChart->axes(Qt::Vertical).back()->setTitleText("axis y");
 }
 
+//draw RGB/CMY/HSI histogram
 void RGBHistogramWidget::setChart(){
 
+    //set labels and colors to the chart
     setColourSets();
 
+    //get the max element of the vectors, to use to calculate the percentages
+    double maxFrstVectorValue = *std::max_element(frst_Values.constBegin(), frst_Values.constEnd());
+    double maxScndVectorValue = *std::max_element(scnd_Values.constBegin(), scnd_Values.constEnd());
+    double maxThrdVectorValue = *std::max_element(thrd_Values.constBegin(), thrd_Values.constEnd());
+
     //add the values to the series
-    //in every function add the vectors a list and then here have a cycle within the cycle which reads the
     for(int i = 0; i < frst_Values.length() - 1; i++){
-        *frstColorSet << frst_Values.at(i);
-        *scndColorSet << scnd_Values.at(i);
-        *thrdColorSet << thrd_Values.at(i);
+        *frstColorSet << (frst_Values.at(i) / maxFrstVectorValue)*100;
+        *scndColorSet << (scnd_Values.at(i) / maxScndVectorValue)*100;
+        *thrdColorSet << (thrd_Values.at(i) / maxThrdVectorValue)*100;
     }
 
-    //get the max numerical value from all the vectors
-    double maxValue = std::max(
-        *std::max_element(frst_Values.constBegin(), frst_Values.constEnd()),
-        std::max(
-            *std::max_element(scnd_Values.constBegin(), scnd_Values.constEnd()),
-                *std::max_element(thrd_Values.constBegin(), thrd_Values.constEnd())
-            )
-        );
-
-    setHistogramChartXYAxis(maxValue, frst_Values.length() - 1);
+    //set histogram axis
+    setHistogramChartXYAxis(frst_Values.length(), 100);
 }
 
+//draw CMYK histogram
 void RGBHistogramWidget::setChartCMYK(){
 
+    //set labels and colors to the chart
     setColourSets();
 
+    //get max element from the vectors to calculate the percentages
+    double maxFrstVectorValue = *std::max_element(frst_Values.constBegin(), frst_Values.constEnd());
+    double maxScndVectorValue = *std::max_element(scnd_Values.constBegin(), scnd_Values.constEnd());
+    double maxThrdVectorValue = *std::max_element(thrd_Values.constBegin(), thrd_Values.constEnd());
+    double maxFourthVectorValue = *std::max_element(fourth_Values.constBegin(), fourth_Values.constEnd());
+
     //add the values to the series
-    //in every function add the vectors a list and then here have a cycle within the cycle which reads the
     for(int i = 0; i < frst_Values.length() - 1; i++){
-        *frstColorSet << frst_Values.at(i);
-        *scndColorSet << scnd_Values.at(i);
-        *thrdColorSet << thrd_Values.at(i);
-        *fourthColorSet << fourth_Values.at(i);
+        *frstColorSet << ((frst_Values.at(i) / maxFrstVectorValue) * 100);
+        *scndColorSet << ((scnd_Values.at(i) / maxScndVectorValue)* 100);
+        *thrdColorSet << ((thrd_Values.at(i) / maxThrdVectorValue) * 100);
+        *fourthColorSet << ((fourth_Values.at(i) / maxFourthVectorValue) * 100);
     }
 
-    //get the max numerical value from all the vectors
-    double maxValue = std::max(
-        *std::max_element(frst_Values.constBegin(), frst_Values.constEnd()),
-        std::max(
-            *std::max_element(scnd_Values.constBegin(), scnd_Values.constEnd()),
-            std::max(
-                *std::max_element(thrd_Values.constBegin(), thrd_Values.constEnd()),
-                *std::max_element(fourth_Values.constBegin(), fourth_Values.constEnd())
-                )
-            )
-        );
-
-    setHistogramChartXYAxis(maxValue, frst_Values.length() - 1);
+    //set histogram axis
+    setHistogramChartXYAxis(frst_Values.length(), 100);
 }

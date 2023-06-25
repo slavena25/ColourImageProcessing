@@ -2,7 +2,6 @@
 #define COLOURMODEL_RGB_H
 
 #include <QDebug>
-#include "icolourmodel.h"
 #include "colorconversion.h"
 
 class ColourModel_RGB
@@ -24,7 +23,7 @@ public:
     void setGreen(int g);
     void setBlue(int b);
 
-protected:
+private:
     double Red;
     double Green;
     double Blue;

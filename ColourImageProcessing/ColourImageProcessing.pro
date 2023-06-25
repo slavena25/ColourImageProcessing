@@ -15,7 +15,6 @@ SOURCES += \
     colourmodel_cmyk.cpp \
     colourmodel_hsi.cpp \
     colourmodel_rgb.cpp \
-    icolourmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     rgbhistogramwidget.cpp
@@ -26,12 +25,13 @@ HEADERS += \
     colourmodel_cmyk.h \
     colourmodel_hsi.h \
     colourmodel_rgb.h \
-    icolourmodel.h \
     mainwindow.h \
     rgbhistogramwidget.h
 
 FORMS += \
     mainwindow.ui
+
+RC_ICONS += ../iconImage/paint_palette_brush_icon_231489.ico
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

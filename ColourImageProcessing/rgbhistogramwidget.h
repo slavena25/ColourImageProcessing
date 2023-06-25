@@ -40,13 +40,6 @@ public:
 
 private:
     //-------------Chart-------------
-    enum ImageColourType{
-        RGB,
-        CMY,
-        CMYK,
-        HSI
-    };
-    ImageColourType ChoosenImageColourType;
 
     //layout
     QGridLayout *grLayout;
